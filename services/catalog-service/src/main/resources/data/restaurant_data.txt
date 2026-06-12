@@ -1,0 +1,102 @@
+use catalog_db;
+
+db.restaurants.insertMany([
+  {
+    _id: UUID("8f7a8f5a-1f90-4a92-b631-4417fbbbe001"),
+    name: "Urban Sushi",
+    address: "Kyiv, Khreshchatyk St, 18",
+    status: "ACTIVE",
+    createdAt: ISODate("2026-06-12T10:00:00Z"),
+    menuItems: [
+      {
+        id: UUID("8f7a8f5a-1f90-4a92-b631-4417fbbbe101"),
+        name: "Philadelphia Classic",
+        description: "Salmon, cream cheese, cucumber, rice, nori",
+        price: NumberDecimal("12.50"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:00:00Z")
+      },
+      {
+        id: UUID("8f7a8f5a-1f90-4a92-b631-4417fbbbe102"),
+        name: "California Roll",
+        description: "Crab mix, avocado, cucumber, sesame",
+        price: NumberDecimal("10.90"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:00:00Z")
+      },
+      {
+        id: UUID("8f7a8f5a-1f90-4a92-b631-4417fbbbe103"),
+        name: "Spicy Tuna Roll",
+        description: "Tuna, spicy mayo, green onion, rice, nori",
+        price: NumberDecimal("11.80"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:00:00Z")
+      },
+      {
+        id: UUID("8f7a8f5a-1f90-4a92-b631-4417fbbbe104"),
+        name: "Miso Soup",
+        description: "Miso broth with tofu, wakame and green onion",
+        price: NumberDecimal("4.20"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:00:00Z")
+      },
+      {
+        id: UUID("8f7a8f5a-1f90-4a92-b631-4417fbbbe105"),
+        name: "Salmon Nigiri",
+        description: "Fresh salmon over seasoned sushi rice",
+        price: NumberDecimal("6.40"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:00:00Z")
+      }
+    ]
+  },
+  {
+    _id: UUID("b2c41fd1-3c7e-47d3-8177-85dfc144e001"),
+    name: "Pasta & Fire",
+    address: "Lviv, Rynok Square, 7",
+    status: "ACTIVE",
+    createdAt: ISODate("2026-06-12T10:05:00Z"),
+    menuItems: [
+      {
+        id: UUID("b2c41fd1-3c7e-47d3-8177-85dfc144e101"),
+        name: "Margherita Pizza",
+        description: "Tomato sauce, mozzarella, basil, olive oil",
+        price: NumberDecimal("9.90"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:05:00Z")
+      },
+      {
+        id: UUID("b2c41fd1-3c7e-47d3-8177-85dfc144e102"),
+        name: "Pepperoni Pizza",
+        description: "Tomato sauce, mozzarella, pepperoni",
+        price: NumberDecimal("11.50"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:05:00Z")
+      },
+      {
+        id: UUID("b2c41fd1-3c7e-47d3-8177-85dfc144e103"),
+        name: "Carbonara",
+        description: "Spaghetti with egg yolk sauce, pancetta and parmesan",
+        price: NumberDecimal("10.70"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:05:00Z")
+      },
+      {
+        id: UUID("b2c41fd1-3c7e-47d3-8177-85dfc144e104"),
+        name: "Lasagna Bolognese",
+        description: "Layered pasta with beef ragu, bechamel and cheese",
+        price: NumberDecimal("12.20"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:05:00Z")
+      },
+      {
+        id: UUID("b2c41fd1-3c7e-47d3-8177-85dfc144e105"),
+        name: "Tiramisu",
+        description: "Coffee-soaked ladyfingers with mascarpone cream",
+        price: NumberDecimal("5.60"),
+        status: "AVAILABLE",
+        createdAt: ISODate("2026-06-12T10:05:00Z")
+      }
+    ]
+  }
+]);
