@@ -2,6 +2,7 @@ package com.arturk.fooddelivery.catalog.dto.entity;
 
 import com.arturk.fooddelivery.catalog.enums.RestaurantStatus;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Document(collection = "restaurants")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Restaurant {
 
     @Id

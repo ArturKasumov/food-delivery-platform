@@ -2,7 +2,11 @@ package com.arturk.fooddelivery.catalog.dto.entity;
 
 import com.arturk.fooddelivery.catalog.enums.MenuItemStatus;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -10,8 +14,10 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class MenuItem {
 
+    @Field(value = "id")
     private UUID id;
     private String name;
     private String description;
