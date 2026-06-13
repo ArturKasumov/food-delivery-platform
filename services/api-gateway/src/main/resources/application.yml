@@ -13,6 +13,13 @@ spring:
               filters:
                 - PreserveHostHeader
                 - DedupeResponseHeader=X-Correlation-Id RETAIN_LAST
+            - id: order-service
+              uri: ${ORDER_SERVICE_URL:http://localhost:8082}
+              predicates:
+                - Path=/api/v1/orders/**
+              filters:
+                - PreserveHostHeader
+                - DedupeResponseHeader=X-Correlation-Id RETAIN_LAST
 
 server:
   port: 8080
