@@ -11,11 +11,13 @@ import com.arturk.fooddelivery.catalog.dto.entity.Restaurant;
 import com.arturk.fooddelivery.catalog.repository.RestaurantRepository;
 import com.arturk.fooddelivery.catalog.enums.RestaurantStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CatalogService {
@@ -23,6 +25,7 @@ public class CatalogService {
     private final RestaurantRepository restaurantRepository;
 
     public List<RestaurantResponse> findActiveRestaurants() {
+        log.info("Finding active restaurants");
         return restaurantRepository.findAllByStatus(RestaurantStatus.ACTIVE)
                 .stream()
                 .map(RestaurantResponse::from)
@@ -31,10 +34,14 @@ public class CatalogService {
 
     public RestaurantResponse createRestaurant(CreateRestaurantRequest request) {
         Restaurant restaurant = new Restaurant(request.name(), request.address());
-        return RestaurantResponse.from(restaurantRepository.save(restaurant));
+        restaurant = restaurantRepository.save(restaurant);
+
+        log.info("Restaurant created: {}", restaurant.getId());
+        return RestaurantResponse.from(restaurant);
     }
 
     public List<MenuItemResponse> findAvailableMenuItems(UUID restaurantId) {
+        log.info("Finding available menu items for restaurant {}", restaurantId);
         Restaurant restaurant = getRestaurantById(restaurantId);
 
         return restaurant.getMenuItems()
