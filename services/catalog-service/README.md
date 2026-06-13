@@ -16,3 +16,17 @@ The service expects MongoDB:
 - URI: `mongodb://admin:pwd@localhost:27017/catalog_db`
 
 The default service port is `8081`.
+
+## OpenAPI
+
+Swagger UI:
+
+```text
+http://localhost:8081/swagger-ui.html
+```
+
+OpenAPI JSON:
+
+```text
+http://localhost:8081/v3/api-docs
+```
