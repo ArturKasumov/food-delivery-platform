@@ -1,21 +1,18 @@
-package com.arturk.fooddelivery.catalog;
+package com.arturk.fooddelivery.catalog.service;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @Testcontainers
-class CatalogServiceApplicationTests {
+@ActiveProfiles("test")
+public class AbstractIntegrationTest {
 
     @Container
     @ServiceConnection
     static final MongoDBContainer mongo = new MongoDBContainer("mongo:7");
-
-    @Test
-    void contextLoads() {
-    }
 }
