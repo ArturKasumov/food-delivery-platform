@@ -62,7 +62,7 @@ public class RestaurantEntity {
     }
 
     public void addMenuItem(MenuItemEntity menuItem) {
-        menuItem.setRestaurantEntity(this);
+        menuItem.setRestaurant(this);
         menuItems.add(menuItem);
     }
 

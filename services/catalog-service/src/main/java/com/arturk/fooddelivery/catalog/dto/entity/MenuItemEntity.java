@@ -35,7 +35,7 @@ public class MenuItemEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    private RestaurantEntity restaurantEntity;
+    private RestaurantEntity restaurant;
 
     @Column(nullable = false)
     private String name;
