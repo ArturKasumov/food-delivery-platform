@@ -27,3 +27,9 @@ replay_pid*
 
 services/catalog-service/target
 services/api-gateway/target
+
+app/node_modules
+app/dist
+app/*.log
+app/.env.local
+app/.env.*.local

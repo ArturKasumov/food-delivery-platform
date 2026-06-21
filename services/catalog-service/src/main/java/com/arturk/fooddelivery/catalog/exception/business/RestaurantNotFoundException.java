@@ -1,6 +1,6 @@
-package com.arturk.fooddelivery.catalog.exception;
+package com.arturk.fooddelivery.catalog.exception.business;
 
-public class RestaurantNotFoundException extends BusinessMarketAppException {
+public class RestaurantNotFoundException extends BusinessCatalogAppException {
 
     private static final String CODE = "CATALOG-MS-02-ERROR";
 

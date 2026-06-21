@@ -8,7 +8,7 @@ import com.arturk.fooddelivery.catalog.dto.entity.MenuItem;
 import com.arturk.fooddelivery.catalog.dto.entity.Restaurant;
 import com.arturk.fooddelivery.catalog.enums.MenuItemStatus;
 import com.arturk.fooddelivery.catalog.enums.RestaurantStatus;
-import com.arturk.fooddelivery.catalog.exception.RestaurantNotFoundException;
+import com.arturk.fooddelivery.catalog.exception.business.RestaurantNotFoundException;
 import com.arturk.fooddelivery.catalog.repository.RestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

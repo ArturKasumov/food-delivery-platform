@@ -4,7 +4,7 @@ import com.arturk.fooddelivery.catalog.dto.CreateMenuItemRequest;
 import com.arturk.fooddelivery.catalog.dto.CreateRestaurantRequest;
 import com.arturk.fooddelivery.catalog.dto.MenuItemResponse;
 import com.arturk.fooddelivery.catalog.dto.RestaurantResponse;
-import com.arturk.fooddelivery.catalog.exception.RestaurantNotFoundException;
+import com.arturk.fooddelivery.catalog.exception.business.RestaurantNotFoundException;
 import com.arturk.fooddelivery.catalog.dto.entity.MenuItem;
 import com.arturk.fooddelivery.catalog.enums.MenuItemStatus;
 import com.arturk.fooddelivery.catalog.dto.entity.Restaurant;

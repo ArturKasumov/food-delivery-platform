@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package fooddelivery.catalog.v1;
+
+option java_multiple_files = true;
+option java_package = "com.arturk.fooddelivery.contracts.catalog.v1";
+option java_outer_classname = "CatalogValidationProto";
+
+service CatalogValidationService {
+  rpc ValidateOrder(ValidateOrderRequest) returns (ValidateOrderResponse);
+}
+
+message ValidateOrderRequest {
+  string restaurant_id = 1;
+  repeated string menu_item_ids = 2;
+}
+
+message ValidateOrderResponse {
+  bool valid = 1;
+}

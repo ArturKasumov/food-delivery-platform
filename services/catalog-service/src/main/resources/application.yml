@@ -5,11 +5,12 @@ spring:
     mongodb:
       uri: mongodb://admin:pwd@localhost:27017/catalog_db?authSource=admin
       uuid-representation: standard
+  grpc:
+    server:
+      port: 9091
 
 server:
   port: 8081
-
-
 
 management:
   endpoints:
@@ -20,7 +21,6 @@ management:
     health:
       probes:
         enabled: true
-
   metrics:
     tags:
       application: ${spring.application.name}
