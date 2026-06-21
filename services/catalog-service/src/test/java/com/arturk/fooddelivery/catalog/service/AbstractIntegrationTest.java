@@ -3,7 +3,7 @@ package com.arturk.fooddelivery.catalog.service;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -14,5 +14,5 @@ public class AbstractIntegrationTest {
 
     @Container
     @ServiceConnection
-    static final MongoDBContainer mongo = new MongoDBContainer("mongo:7");
+    static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 }

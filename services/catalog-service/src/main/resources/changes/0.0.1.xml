@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="0.0.1-1" author="arturk">
+        <createTable tableName="restaurants">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_restaurants"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="restaurants"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0.0.1-2" author="arturk">
+        <createTable tableName="menu_items">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_menu_items"/>
+            </column>
+            <column name="restaurant_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)"/>
+            <column name="price" type="numeric(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="menu_items"
+                baseColumnNames="restaurant_id"
+                constraintName="fk_menu_items_restaurant"
+                referencedTableName="restaurants"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <rollback>
+            <dropTable tableName="menu_items"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

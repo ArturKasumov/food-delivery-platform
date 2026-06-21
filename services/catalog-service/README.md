@@ -1,6 +1,6 @@
 # catalog-service
 
-Owns restaurant and menu catalog data.
+Owns restaurantEntity and menu catalog data.
 
 ## API
 
@@ -11,9 +11,13 @@ Owns restaurant and menu catalog data.
 
 ## Local Runtime
 
-The service expects MongoDB:
+The service expects PostgreSQL:
 
-- URI: `mongodb://admin:pwd@localhost:27017/catalog_db`
+- JDBC URL: `jdbc:postgresql://localhost:5432/catalog_db`
+- Username: `admin`
+- Password: `pwd`
+
+Database schema is managed by Liquibase XML changelogs.
 
 The default service port is `8081`.
 

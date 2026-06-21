@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.catalog.dto;
 
-import com.arturk.fooddelivery.catalog.dto.entity.MenuItem;
+import com.arturk.fooddelivery.catalog.dto.entity.MenuItemEntity;
 import com.arturk.fooddelivery.catalog.enums.MenuItemStatus;
 
 import java.math.BigDecimal;
@@ -15,7 +15,7 @@ public record MenuItemResponse(
         MenuItemStatus status
 ) {
 
-    public static MenuItemResponse from(UUID restaurantId, MenuItem menuItem) {
+    public static MenuItemResponse from(UUID restaurantId, MenuItemEntity menuItem) {
         return new MenuItemResponse(
                 menuItem.getId(),
                 restaurantId,

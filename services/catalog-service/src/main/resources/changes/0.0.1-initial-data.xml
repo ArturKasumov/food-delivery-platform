@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="0.0.1-initial-data-1" author="arturk">
+        <insert tableName="restaurants">
+            <column name="id" value="10000000-0000-0000-0000-000000000001"/>
+            <column name="name" value="Slobozhanska Kuhnia"/>
+            <column name="address" value="Kharkiv, Sumska Street 35"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+
+        <insert tableName="restaurants">
+            <column name="id" value="10000000-0000-0000-0000-000000000002"/>
+            <column name="name" value="Kharkiv Pizza Lab"/>
+            <column name="address" value="Kharkiv, Hryhoriia Skovorody Street 18"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+
+        <insert tableName="restaurants">
+            <column name="id" value="10000000-0000-0000-0000-000000000003"/>
+            <column name="name" value="Asia Station"/>
+            <column name="address" value="Kharkiv, Nauky Avenue 21"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="restaurants">
+                <where>id IN ('10000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000003')</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0.0.1-initial-data-2" author="arturk">
+        <insert tableName="menu_items">
+            <column name="id" value="20000000-0000-0000-0000-000000000001"/>
+            <column name="restaurant_id" value="10000000-0000-0000-0000-000000000001"/>
+            <column name="name" value="Borshch with Pampushky"/>
+            <column name="description" value="Traditional beetroot soup with beef, sour cream and garlic pampushky"/>
+            <column name="price" valueNumeric="185.00"/>
+            <column name="status" value="AVAILABLE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+        <insert tableName="menu_items">
+            <column name="id" value="20000000-0000-0000-0000-000000000002"/>
+            <column name="restaurant_id" value="10000000-0000-0000-0000-000000000001"/>
+            <column name="name" value="Varenyky with Potato"/>
+            <column name="description" value="Varenyky with potato, fried onion and sour cream"/>
+            <column name="price" valueNumeric="155.00"/>
+            <column name="status" value="AVAILABLE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+        <insert tableName="menu_items">
+            <column name="id" value="20000000-0000-0000-0000-000000000003"/>
+            <column name="restaurant_id" value="10000000-0000-0000-0000-000000000001"/>
+            <column name="name" value="Chicken Kyiv"/>
+            <column name="description" value="Chicken fillet with herb butter and mashed potato"/>
+            <column name="price" valueNumeric="245.00"/>
+            <column name="status" value="AVAILABLE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+
+        <insert tableName="menu_items">
+            <column name="id" value="20000000-0000-0000-0000-000000000004"/>
+            <column name="restaurant_id" value="10000000-0000-0000-0000-000000000002"/>
+            <column name="name" value="Margherita"/>
+            <column name="description" value="Tomato sauce, mozzarella and fresh basil"/>
+            <column name="price" valueNumeric="210.00"/>
+            <column name="status" value="AVAILABLE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+        <insert tableName="menu_items">
+            <column name="id" value="20000000-0000-0000-0000-000000000005"/>
+            <column name="restaurant_id" value="10000000-0000-0000-0000-000000000002"/>
+            <column name="name" value="Pepperoni"/>
+            <column name="description" value="Tomato sauce, mozzarella and spicy pepperoni"/>
+            <column name="price" valueNumeric="265.00"/>
+            <column name="status" value="AVAILABLE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+        <insert tableName="menu_items">
+            <column name="id" value="20000000-0000-0000-0000-000000000006"/>
+            <column name="restaurant_id" value="10000000-0000-0000-0000-000000000002"/>
+            <column name="name" value="Four Cheese"/>
+            <column name="description" value="Mozzarella, gorgonzola, parmesan and cheddar"/>
+            <column name="price" valueNumeric="285.00"/>
+            <column name="status" value="AVAILABLE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+
+        <insert tableName="menu_items">
+            <column name="id" value="20000000-0000-0000-0000-000000000007"/>
+            <column name="restaurant_id" value="10000000-0000-0000-0000-000000000003"/>
+            <column name="name" value="Chicken Ramen"/>
+            <column name="description" value="Chicken broth, noodles, egg, mushrooms and green onion"/>
+            <column name="price" valueNumeric="235.00"/>
+            <column name="status" value="AVAILABLE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+        <insert tableName="menu_items">
+            <column name="id" value="20000000-0000-0000-0000-000000000008"/>
+            <column name="restaurant_id" value="10000000-0000-0000-0000-000000000003"/>
+            <column name="name" value="Philadelphia Roll"/>
+            <column name="description" value="Salmon, cream cheese, cucumber and rice"/>
+            <column name="price" valueNumeric="295.00"/>
+            <column name="status" value="AVAILABLE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+        <insert tableName="menu_items">
+            <column name="id" value="20000000-0000-0000-0000-000000000009"/>
+            <column name="restaurant_id" value="10000000-0000-0000-0000-000000000003"/>
+            <column name="name" value="Chicken Wok"/>
+            <column name="description" value="Egg noodles, chicken, vegetables and teriyaki sauce"/>
+            <column name="price" valueNumeric="220.00"/>
+            <column name="status" value="AVAILABLE"/>
+            <column name="created_at" valueDate="2026-06-21T10:00:00"/>
+            <column name="updated_at" valueDate="2026-06-21T10:00:00"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="menu_items">
+                <where>restaurant_id IN ('10000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000003')</where>
+            </delete>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

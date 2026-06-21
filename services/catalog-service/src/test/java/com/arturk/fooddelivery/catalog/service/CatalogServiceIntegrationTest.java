@@ -4,11 +4,12 @@ import com.arturk.fooddelivery.catalog.dto.CreateMenuItemRequest;
 import com.arturk.fooddelivery.catalog.dto.CreateRestaurantRequest;
 import com.arturk.fooddelivery.catalog.dto.MenuItemResponse;
 import com.arturk.fooddelivery.catalog.dto.RestaurantResponse;
-import com.arturk.fooddelivery.catalog.dto.entity.MenuItem;
-import com.arturk.fooddelivery.catalog.dto.entity.Restaurant;
+import com.arturk.fooddelivery.catalog.dto.entity.MenuItemEntity;
+import com.arturk.fooddelivery.catalog.dto.entity.RestaurantEntity;
 import com.arturk.fooddelivery.catalog.enums.MenuItemStatus;
 import com.arturk.fooddelivery.catalog.enums.RestaurantStatus;
 import com.arturk.fooddelivery.catalog.exception.business.RestaurantNotFoundException;
+import com.arturk.fooddelivery.catalog.repository.MenuItemRepository;
 import com.arturk.fooddelivery.catalog.repository.RestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,8 +32,12 @@ class CatalogServiceIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
+    @Autowired
+    private MenuItemRepository menuItemRepository;
+
     @BeforeEach
     void cleanDatabase() {
+        menuItemRepository.deleteAll();
         restaurantRepository.deleteAll();
     }
 
@@ -51,7 +56,7 @@ class CatalogServiceIntegrationTest extends AbstractIntegrationTest {
         assertThat(response.address()).isEqualTo("Main street 10");
         assertThat(response.status()).isEqualTo(RestaurantStatus.ACTIVE);
 
-        Optional<Restaurant> savedRestaurant = restaurantRepository.findById(response.id());
+        Optional<RestaurantEntity> savedRestaurant = restaurantRepository.findById(response.id());
 
         assertThat(savedRestaurant).isPresent();
         assertEquals(savedRestaurant.get().getId(), response.id());
@@ -61,8 +66,8 @@ class CatalogServiceIntegrationTest extends AbstractIntegrationTest {
     @Test
     void shouldFindOnlyActiveRestaurants() {
         //given
-        Restaurant active = new Restaurant("Pizza House", "Main street 10");
-        Restaurant inactive = new Restaurant("Old Cafe", "Second street 5");
+        RestaurantEntity active = new RestaurantEntity("Pizza House", "Main street 10");
+        RestaurantEntity inactive = new RestaurantEntity("Old Cafe", "Second street 5");
         inactive.setStatus(RestaurantStatus.INACTIVE);
 
         restaurantRepository.saveAll(List.of(active, inactive));
@@ -79,8 +84,8 @@ class CatalogServiceIntegrationTest extends AbstractIntegrationTest {
     @Test
     void shouldCreateMenuItem() {
         // given
-        Restaurant restaurant =
-                restaurantRepository.save(new Restaurant("Pizza House", "Main street 10"));
+        RestaurantEntity restaurantEntity =
+                restaurantRepository.save(new RestaurantEntity("Pizza House", "Main street 10"));
 
         CreateMenuItemRequest request =
                 new CreateMenuItemRequest(
@@ -91,39 +96,36 @@ class CatalogServiceIntegrationTest extends AbstractIntegrationTest {
 
         //when
         MenuItemResponse response =
-                catalogService.createMenuItem(restaurant.getId(), request);
+                catalogService.createMenuItem(restaurantEntity.getId(), request);
 
         //then
         assertThat(response.id()).isNotNull();
-        assertThat(response.restaurantId()).isEqualTo(restaurant.getId());
+        assertThat(response.restaurantId()).isEqualTo(restaurantEntity.getId());
         assertThat(response.name()).isEqualTo("Margarita");
         assertThat(response.status()).isEqualTo(MenuItemStatus.AVAILABLE);
 
-        Optional<Restaurant> updatedRestaurant = restaurantRepository.findById(restaurant.getId());
-
-        assertThat(updatedRestaurant).isPresent();
-        assertThat(updatedRestaurant.get().getMenuItems()).hasSize(1);
+        assertThat(menuItemRepository.findAll()).hasSize(1);
     }
 
     @Test
     void shouldFindOnlyAvailableMenuItems() {
         //given
-        Restaurant restaurant = new Restaurant("Pizza House", "Main street 10");
+        RestaurantEntity restaurantEntity = new RestaurantEntity("Pizza House", "Main street 10");
 
-        MenuItem availableMenuItem =
-                new MenuItem("Margarita", "Classic pizza", BigDecimal.valueOf(5.20));
+        MenuItemEntity availableMenuItem =
+                new MenuItemEntity("Margarita", "Classic pizza", BigDecimal.valueOf(5.20));
 
-        MenuItem unavailableMenuItem =
-                new MenuItem("Pepperoni", "Spicy pizza", BigDecimal.valueOf(6.10));
+        MenuItemEntity unavailableMenuItem =
+                new MenuItemEntity("Pepperoni", "Spicy pizza", BigDecimal.valueOf(6.10));
         unavailableMenuItem.setStatus(MenuItemStatus.UNAVAILABLE);
 
-        restaurant.addMenuItem(availableMenuItem);
-        restaurant.addMenuItem(unavailableMenuItem);
+        restaurantEntity.addMenuItem(availableMenuItem);
+        restaurantEntity.addMenuItem(unavailableMenuItem);
 
-        restaurant = restaurantRepository.save(restaurant);
+        restaurantEntity = restaurantRepository.save(restaurantEntity);
 
         //when
-        List<MenuItemResponse> result = catalogService.findAvailableMenuItems(restaurant.getId());
+        List<MenuItemResponse> result = catalogService.findAvailableMenuItems(restaurantEntity.getId());
 
         //then
         assertThat(result).hasSize(1);

@@ -1,18 +1,18 @@
 services:
-  catalog-mongodb:
-    image: mongo:7
-    container_name: catalog-mongodb
+  catalog-postgres:
+    image: postgres:16-alpine
+    container_name: catalog-postgres
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: pwd
-      MONGO_INITDB_DATABASE: catalog_db
+      POSTGRES_DB: catalog_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pwd
     volumes:
-      - catalog_mongodb_data:/data/db
+      - catalog_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d catalog_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -70,7 +70,7 @@ services:
       - prometheus
 
 volumes:
-  catalog_mongodb_data:
+  catalog_postgres_data:
   order_postgres_data:
   prometheus_data:
   grafana_data:

@@ -1,10 +1,16 @@
 spring:
   application:
     name: catalog-service
-  data:
-    mongodb:
-      uri: mongodb://admin:pwd@localhost:27017/catalog_db?authSource=admin
-      uuid-representation: standard
+  datasource:
+    url: jdbc:postgresql://localhost:5432/catalog_db
+    username: admin
+    password: pwd
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db.changelog-master.xml
   grpc:
     server:
       port: 9091

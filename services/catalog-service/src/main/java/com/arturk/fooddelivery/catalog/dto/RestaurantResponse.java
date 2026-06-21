@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.catalog.dto;
 
-import com.arturk.fooddelivery.catalog.dto.entity.Restaurant;
+import com.arturk.fooddelivery.catalog.dto.entity.RestaurantEntity;
 import com.arturk.fooddelivery.catalog.enums.RestaurantStatus;
 
 import java.util.UUID;
@@ -12,12 +12,12 @@ public record RestaurantResponse(
         RestaurantStatus status
 ) {
 
-    public static RestaurantResponse from(Restaurant restaurant) {
+    public static RestaurantResponse from(RestaurantEntity restaurantEntity) {
         return new RestaurantResponse(
-                restaurant.getId(),
-                restaurant.getName(),
-                restaurant.getAddress(),
-                restaurant.getStatus()
+                restaurantEntity.getId(),
+                restaurantEntity.getName(),
+                restaurantEntity.getAddress(),
+                restaurantEntity.getStatus()
         );
     }
 }

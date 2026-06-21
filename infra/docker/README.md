@@ -1,15 +1,15 @@
 # Local Infrastructure
 
-### Run MongoDB for `catalog-service`:
+### Run PostgreSQL for `catalog-service`:
 
 ```bash
-docker compose -f infra/docker/docker-compose.yml up -d catalog-mongodb
+docker compose -f infra/docker/docker-compose.yml up -d catalog-postgres
 ```
 
-MongoDB connection URI:
+PostgreSQL connection URI:
 
 ```text
-mongodb://admin:pwd@localhost:27017/catalog_db
+postgresql://admin:pwd@localhost:5432/catalog_db
 ```
 
 ### Run PostgreSQL for `order-service`:
