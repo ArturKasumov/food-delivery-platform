@@ -1,5 +1,7 @@
 package com.arturk.fooddelivery.order.exception;
 
+import com.arturk.fooddelivery.order.exception.business.BusinessOrderAppException;
+import com.arturk.fooddelivery.order.exception.technical.TechnicalMarketAppException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -35,8 +37,8 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BusinessMarketAppException.class)
-    public ResponseEntity<ErrorResponse> handleException(BusinessMarketAppException exception) {
+    @ExceptionHandler(BusinessOrderAppException.class)
+    public ResponseEntity<ErrorResponse> handleException(BusinessOrderAppException exception) {
         log.error("Business error occurred", exception);
         ErrorResponse errorResponse = new ErrorResponse(exception.getCode(), exception.getDescription(), exception.getDetails());
         return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()));

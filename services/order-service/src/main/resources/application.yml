@@ -11,6 +11,11 @@ spring:
     open-in-view: false
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
+  grpc:
+    client:
+      channels:
+        catalog-service:
+          address: ${CATALOG_GRPC_ADDRESS:static://localhost:9091}
 
 server:
   port: 8082

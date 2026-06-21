@@ -1,9 +1,12 @@
 package com.arturk.fooddelivery.order.service;
 
+import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
+import com.arturk.fooddelivery.order.service.grpc.client.CatalogValidationClient;
 import com.arturk.fooddelivery.order.domain.CustomerOrder;
 import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
 import com.arturk.fooddelivery.order.dto.OrderResponse;
-import com.arturk.fooddelivery.order.exception.OrderNotFoundException;
+import com.arturk.fooddelivery.order.exception.business.CatalogValidationException;
+import com.arturk.fooddelivery.order.exception.business.OrderNotFoundException;
 import com.arturk.fooddelivery.order.repository.CustomerOrderRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +23,12 @@ import java.util.UUID;
 public class OrderService {
 
     private final CustomerOrderRepository orderRepository;
+    private final CatalogValidationClient catalogValidationClient;
 
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
+        validateOrder(request);
+
         CustomerOrder order = new CustomerOrder(request.customerId(), request.restaurantId());
         request.items().forEach(item -> order.addItem(item.menuItemId(), item.quantity()));
 
@@ -49,5 +55,18 @@ public class OrderService {
     private CustomerOrder getOrderById(UUID orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
+    }
+
+    private void validateOrder(CreateOrderRequest request) {
+        boolean isOrderValid = catalogValidationClient.isOrderValid(
+                request.restaurantId(),
+                request.items().stream()
+                        .map(CreateOrderItemRequest::menuItemId)
+                        .toList()
+        );
+
+        if (!isOrderValid) {
+            throw new CatalogValidationException();
+        }
     }
 }

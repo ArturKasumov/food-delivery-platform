@@ -1,4 +1,6 @@
-package com.arturk.fooddelivery.order.exception;
+package com.arturk.fooddelivery.order.exception.technical;
+
+import com.arturk.fooddelivery.order.exception.ApplicationException;
 
 public class TechnicalMarketAppException extends ApplicationException {
 
