@@ -1,0 +1,55 @@
+logging {
+  level = "info"
+}
+
+local.file_match "spring_boot_logs" {
+  path_targets = [
+    {
+      "__path__"    = "/var/log/apps/api-gateway/*.json",
+      "service_name" = "api-gateway",
+      "environment"  = env("APP_ENV"),
+      "instance"     = "api-gateway",
+    },
+    {
+      "__path__"    = "/var/log/apps/catalog-service/*.json",
+      "service_name" = "catalog-service",
+      "environment"  = env("APP_ENV"),
+      "instance"     = "catalog-service",
+    },
+    {
+      "__path__"    = "/var/log/apps/order-service/*.json",
+      "service_name" = "order-service",
+      "environment"  = env("APP_ENV"),
+      "instance"     = "order-service",
+    },
+  ]
+  sync_period = "5s"
+}
+
+loki.source.file "spring_boot_logs" {
+  targets       = local.file_match.spring_boot_logs.targets
+  forward_to    = [loki.process.spring_boot_logs.receiver]
+  tail_from_end = false
+}
+
+loki.process "spring_boot_logs" {
+  stage.json {
+    expressions = {
+      level = "level",
+    }
+  }
+
+  stage.labels {
+    values = {
+      level = "",
+    }
+  }
+
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = env("LOKI_PUSH_URL")
+  }
+}

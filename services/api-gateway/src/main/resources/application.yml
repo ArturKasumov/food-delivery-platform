@@ -22,8 +22,15 @@ spring:
                 - DedupeResponseHeader=X-Correlation-Id RETAIN_LAST
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
   forward-headers-strategy: framework
+
+app:
+  environment: ${APP_ENV:local}
+
+logging:
+  file:
+    path: ${LOG_PATH:logs}
 
 management:
   endpoints:
@@ -34,6 +41,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+      environment: ${app.environment}
 
   endpoint:
     health:

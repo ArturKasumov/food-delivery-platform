@@ -2,9 +2,9 @@ spring:
   application:
     name: catalog-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/catalog_db
-    username: admin
-    password: pwd
+    url: ${CATALOG_DATASOURCE_URL:jdbc:postgresql://localhost:5432/catalog_db}
+    username: ${CATALOG_DATASOURCE_USERNAME:admin}
+    password: ${CATALOG_DATASOURCE_PASSWORD:pwd}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -16,7 +16,14 @@ spring:
       port: 9091
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
+
+app:
+  environment: ${APP_ENV:local}
+
+logging:
+  file:
+    path: ${LOG_PATH:logs}
 
 management:
   endpoints:
@@ -30,6 +37,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+      environment: ${app.environment}
 
 springdoc:
   api-docs:

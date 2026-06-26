@@ -24,6 +24,7 @@
         <spring-grpc.version>0.12.0</spring-grpc.version>
         <grpc.version>1.64.0</grpc.version>
         <protobuf.version>3.25.3</protobuf.version>
+        <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
     </properties>
 
     <dependencyManagement>
@@ -113,6 +114,11 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback-encoder.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>

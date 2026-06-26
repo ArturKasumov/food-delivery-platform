@@ -1,7 +1,7 @@
 services:
   catalog-postgres:
     image: postgres:16-alpine
-    container_name: catalog-postgres
+    container_name: catalog-postgres-db
     restart: unless-stopped
     ports:
       - "5432:5432"
@@ -20,7 +20,7 @@ services:
 
   order-postgres:
     image: postgres:16-alpine
-    container_name: order-postgres
+    container_name: order-postgres-db
     restart: unless-stopped
     ports:
       - "5433:5432"
@@ -37,20 +37,70 @@ services:
       retries: 5
       start_period: 20s
 
+  loki:
+    image: grafana/loki:3.5.1
+    container_name: loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yml:ro
+      - loki_data:/loki
+    command:
+      - "-config.file=/etc/loki/local-config.yml"
+
+  alloy:
+    image: grafana/alloy:v1.8.3
+    container_name: alloy
+    restart: unless-stopped
+    ports:
+      - "12345:12345"
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      LOKI_PUSH_URL: ${LOKI_PUSH_URL:-http://loki:3100/loki/api/v1/push}
+    volumes:
+      - ./loki/alloy-config.alloy:/etc/alloy/config.alloy:ro
+      - ../../services/api-gateway/logs:/var/log/apps/api-gateway:ro
+      - ../../services/catalog-service/logs:/var/log/apps/catalog-service:ro
+      - ../../services/order-service/logs:/var/log/apps/order-service:ro
+      - alloy_data:/var/lib/alloy/data
+    command:
+      - run
+      - "--server.http.listen-addr=0.0.0.0:12345"
+      - "--storage.path=/var/lib/alloy/data"
+      - /etc/alloy/config.alloy
+    depends_on:
+      - loki
+
   prometheus:
     image: prom/prometheus:v3.12.0
     container_name: prometheus
     restart: unless-stopped
     ports:
       - "9090:9090"
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      API_GATEWAY_METRICS_TARGET: ${API_GATEWAY_METRICS_TARGET:-host.docker.internal:8080}
+      CATALOG_SERVICE_METRICS_TARGET: ${CATALOG_SERVICE_METRICS_TARGET:-host.docker.internal:8081}
+      ORDER_SERVICE_METRICS_TARGET: ${ORDER_SERVICE_METRICS_TARGET:-host.docker.internal:8082}
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml.template:ro
       - prometheus_data:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-      - "--web.console.templates=/usr/share/prometheus/consoles"
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        sed \
+          -e "s|__APP_ENV__|$${APP_ENV}|g" \
+          -e "s|__API_GATEWAY_METRICS_TARGET__|$${API_GATEWAY_METRICS_TARGET}|g" \
+          -e "s|__CATALOG_SERVICE_METRICS_TARGET__|$${CATALOG_SERVICE_METRICS_TARGET}|g" \
+          -e "s|__ORDER_SERVICE_METRICS_TARGET__|$${ORDER_SERVICE_METRICS_TARGET}|g" \
+          /etc/prometheus/prometheus.yml.template > /tmp/prometheus.yml
+        exec /bin/prometheus \
+          --config.file=/tmp/prometheus.yml \
+          --storage.tsdb.path=/prometheus \
+          --web.console.libraries=/usr/share/prometheus/console_libraries \
+          --web.console.templates=/usr/share/prometheus/consoles
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -63,14 +113,19 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
+      PROMETHEUS_URL: ${PROMETHEUS_URL:-http://prometheus:9090}
+      LOKI_URL: ${LOKI_URL:-http://loki:3100}
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - prometheus
+      - loki
 
 volumes:
   catalog_postgres_data:
   order_postgres_data:
   prometheus_data:
   grafana_data:
+  loki_data:
+  alloy_data:

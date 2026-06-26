@@ -2,9 +2,9 @@ spring:
   application:
     name: order-service
   datasource:
-    url: jdbc:postgresql://localhost:5433/order_db
-    username: admin
-    password: pwd
+    url: ${ORDER_DATASOURCE_URL:jdbc:postgresql://localhost:5433/order_db}
+    username: ${ORDER_DATASOURCE_USERNAME:admin}
+    password: ${ORDER_DATASOURCE_PASSWORD:pwd}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,7 +18,14 @@ spring:
           address: ${CATALOG_GRPC_ADDRESS:static://localhost:9091}
 
 server:
-  port: 8082
+  port: ${SERVER_PORT:8082}
+
+app:
+  environment: ${APP_ENV:local}
+
+logging:
+  file:
+    path: ${LOG_PATH:logs}
 
 management:
   endpoints:
@@ -33,6 +40,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+      environment: ${app.environment}
 
 springdoc:
   api-docs:
