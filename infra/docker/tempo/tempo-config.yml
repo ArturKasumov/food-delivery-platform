@@ -19,6 +19,18 @@ storage:
     local:
       path: /var/tempo/traces
 
+metrics_generator:
+  storage:
+    path: /var/tempo/generator/wal
+  traces_storage:
+    path: /var/tempo/generator/traces
+
 compactor:
   compaction:
     block_retention: 168h
+
+overrides:
+  defaults:
+    metrics_generator:
+      processors:
+        - local-blocks

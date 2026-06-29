@@ -64,6 +64,21 @@ otelcol.receiver.otlp "spring_boot_traces" {
   }
 
   output {
+    traces = [otelcol.processor.filter.drop_actuator_traces.input]
+  }
+}
+
+otelcol.processor.filter "drop_actuator_traces" {
+  error_mode = "ignore"
+
+  traces {
+    span = [
+      "IsMatch(attributes[\"url.path\"], \"^/actuator(/.*)?$\")",
+      "IsMatch(attributes[\"http.route\"], \"^/actuator(/.*)?$\")",
+    ]
+  }
+
+  output {
     traces = [otelcol.processor.batch.spring_boot_traces.input]
   }
 }
