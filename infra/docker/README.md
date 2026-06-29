@@ -137,33 +137,35 @@ http: localhost:4318
 Download the OpenTelemetry Java Agent and keep it outside service source code, for example:
 
 ```text
-D:\arturk\JavaProjects\food-delivery-platform\tools\opentelemetry-javaagent.jar
+D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry-javaagent.jar
 ```
 
-Add this VM option to each Spring Boot run configuration:
+OpenTelemetry Java Agent reads its settings from service-specific config files:
 
 ```text
--javaagent:D:\arturk\JavaProjects\food-delivery-platform\tools\opentelemetry-javaagent.jar
+D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry\api-gateway.properties
+D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry\catalog-service.properties
+D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry\order-service.properties
 ```
 
-Add these environment variables for each service:
+Use these VM options:
+
+`api-gateway`:
 
 ```text
-OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
-OTEL_EXPORTER_OTLP_PROTOCOL=grpc
-OTEL_TRACES_EXPORTER=otlp
-OTEL_METRICS_EXPORTER=none
-OTEL_LOGS_EXPORTER=none
-OTEL_PROPAGATORS=tracecontext,baggage
-OTEL_INSTRUMENTATION_LOGBACK_MDC_ENABLED=true
+-javaagent:D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry-javaagent.jar -Dotel.javaagent.configuration-file=D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry\api-gateway.properties
 ```
 
-Set the service name per run configuration:
+`catalog-service`:
 
 ```text
-OTEL_SERVICE_NAME=api-gateway
-OTEL_SERVICE_NAME=catalog-service
-OTEL_SERVICE_NAME=order-service
+-javaagent:D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry-javaagent.jar -Dotel.javaagent.configuration-file=D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry\catalog-service.properties
+```
+
+`order-service`:
+
+```text
+-javaagent:D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry-javaagent.jar -Dotel.javaagent.configuration-file=D:\arturk\JavaProjects\food-delivery-platform\infra\opentelemetry\order-service.properties
 ```
 
 After generating traffic, open Grafana, select the `Tempo` datasource in Explore, and search recent traces.
