@@ -53,3 +53,33 @@ loki.write "default" {
     url = env("LOKI_PUSH_URL")
   }
 }
+
+otelcol.receiver.otlp "spring_boot_traces" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+
+  output {
+    traces = [otelcol.processor.batch.spring_boot_traces.input]
+  }
+}
+
+otelcol.processor.batch "spring_boot_traces" {
+  output {
+    traces = [otelcol.exporter.otlp.tempo.input]
+  }
+}
+
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = env("TEMPO_OTLP_GRPC_URL")
+
+    tls {
+      insecure = true
+    }
+  }
+}

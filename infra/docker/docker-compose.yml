@@ -55,9 +55,12 @@ services:
     restart: unless-stopped
     ports:
       - "12345:12345"
+      - "4317:4317"
+      - "4318:4318"
     environment:
       APP_ENV: ${APP_ENV:-local}
       LOKI_PUSH_URL: ${LOKI_PUSH_URL:-http://loki:3100/loki/api/v1/push}
+      TEMPO_OTLP_GRPC_URL: ${TEMPO_OTLP_GRPC_URL:-tempo:4317}
     volumes:
       - ./loki/alloy-config.alloy:/etc/alloy/config.alloy:ro
       - ../../services/api-gateway/logs:/var/log/apps/api-gateway:ro
@@ -71,6 +74,19 @@ services:
       - /etc/alloy/config.alloy
     depends_on:
       - loki
+      - tempo
+
+  tempo:
+    image: grafana/tempo:2.9.0
+    container_name: tempo
+    restart: unless-stopped
+    ports:
+      - "3200:3200"
+    volumes:
+      - ./tempo/tempo-config.yml:/etc/tempo/tempo-config.yml:ro
+      - tempo_data:/var/tempo
+    command:
+      - "-config.file=/etc/tempo/tempo-config.yml"
 
   prometheus:
     image: prom/prometheus:v3.12.0
@@ -115,6 +131,7 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
       PROMETHEUS_URL: ${PROMETHEUS_URL:-http://prometheus:9090}
       LOKI_URL: ${LOKI_URL:-http://loki:3100}
+      TEMPO_URL: ${TEMPO_URL:-http://tempo:3200}
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
@@ -122,6 +139,7 @@ services:
     depends_on:
       - prometheus
       - loki
+      - tempo
 
 volumes:
   catalog_postgres_data:
@@ -130,3 +148,4 @@ volumes:
   grafana_data:
   loki_data:
   alloy_data:
+  tempo_data:

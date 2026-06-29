@@ -15,3 +15,10 @@ datasources:
     access: proxy
     url: ${LOKI_URL}
     editable: true
+
+  - name: Tempo
+    uid: tempo
+    type: tempo
+    access: proxy
+    url: ${TEMPO_URL}
+    editable: true
