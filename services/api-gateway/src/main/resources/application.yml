@@ -30,7 +30,7 @@ app:
 
 logging:
   file:
-    path: ${LOG_PATH:logs}
+    path: ${LOG_PATH:services/${spring.application.name}/logs}
 
 management:
   endpoints:
