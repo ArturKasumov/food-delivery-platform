@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,14 +18,14 @@ import java.util.UUID;
 @Setter
 @Table(name = "order_items")
 @NoArgsConstructor
-public class OrderItem {
+public class OrderItemEntity {
 
     @Id
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
-    private CustomerOrder order;
+    private CustomerOrderEntity order;
 
     @Column(name = "menu_item_id", nullable = false)
     private UUID menuItemId;
@@ -34,7 +33,7 @@ public class OrderItem {
     @Column(nullable = false)
     private int quantity;
 
-    public OrderItem(CustomerOrder order, UUID menuItemId, int quantity) {
+    public OrderItemEntity(CustomerOrderEntity order, UUID menuItemId, int quantity) {
         this.id = UUID.randomUUID();
         this.order = order;
         this.menuItemId = menuItemId;
@@ -51,7 +50,7 @@ public class OrderItem {
             return false;
         }
 
-        OrderItem that = (OrderItem) o;
+        OrderItemEntity that = (OrderItemEntity) o;
         return id != null && id.equals(that.id);
     }
 

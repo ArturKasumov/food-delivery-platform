@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.order.dto;
 
-import com.arturk.fooddelivery.order.domain.CustomerOrder;
+import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
 import com.arturk.fooddelivery.order.enums.OrderStatus;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ public record OrderResponse(
         LocalDateTime updatedAt
 ) {
 
-    public static OrderResponse from(CustomerOrder order) {
+    public static OrderResponse from(CustomerOrderEntity order) {
         return new OrderResponse(
                 order.getId(),
                 order.getCustomerId(),

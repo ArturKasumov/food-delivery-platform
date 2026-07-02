@@ -2,7 +2,7 @@ package com.arturk.fooddelivery.order.service;
 
 import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
 import com.arturk.fooddelivery.order.service.grpc.client.CatalogValidationClient;
-import com.arturk.fooddelivery.order.domain.CustomerOrder;
+import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
 import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
 import com.arturk.fooddelivery.order.dto.OrderResponse;
 import com.arturk.fooddelivery.order.exception.business.CatalogValidationException;
@@ -29,10 +29,11 @@ public class OrderService {
     public OrderResponse createOrder(CreateOrderRequest request) {
         validateOrder(request);
 
-        CustomerOrder order = new CustomerOrder(request.customerId(), request.restaurantId());
+        CustomerOrderEntity order = new CustomerOrderEntity(request.customerId(), request.restaurantId());
         request.items().forEach(item -> order.addItem(item.menuItemId(), item.quantity()));
 
-        CustomerOrder savedOrder = orderRepository.save(order);
+        CustomerOrderEntity savedOrder = orderRepository.save(order);
+
         log.info("Order created: {}", savedOrder.getId());
 
         return OrderResponse.from(savedOrder);
@@ -52,7 +53,7 @@ public class OrderService {
                 .toList();
     }
 
-    private CustomerOrder getOrderById(UUID orderId) {
+    private CustomerOrderEntity getOrderById(UUID orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
     }

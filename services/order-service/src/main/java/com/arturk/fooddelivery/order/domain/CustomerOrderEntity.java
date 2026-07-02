@@ -2,7 +2,6 @@ package com.arturk.fooddelivery.order.domain;
 
 import com.arturk.fooddelivery.order.enums.OrderStatus;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +20,7 @@ import java.util.UUID;
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-public class CustomerOrder {
+public class CustomerOrderEntity {
 
     @Id
     private UUID id;
@@ -37,7 +36,7 @@ public class CustomerOrder {
     private OrderStatus status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items = new ArrayList<>();
+    private List<OrderItemEntity> items = new ArrayList<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -47,7 +46,7 @@ public class CustomerOrder {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public CustomerOrder(UUID customerId, UUID restaurantId) {
+    public CustomerOrderEntity(UUID customerId, UUID restaurantId) {
         this.id = UUID.randomUUID();
         this.customerId = customerId;
         this.restaurantId = restaurantId;
@@ -55,7 +54,7 @@ public class CustomerOrder {
     }
 
     public void addItem(UUID menuItemId, int quantity) {
-        items.add(new OrderItem(this, menuItemId, quantity));
+        items.add(new OrderItemEntity(this, menuItemId, quantity));
     }
 
     @Override
@@ -68,7 +67,7 @@ public class CustomerOrder {
             return false;
         }
 
-        CustomerOrder that = (CustomerOrder) o;
+        CustomerOrderEntity that = (CustomerOrderEntity) o;
         return id != null && id.equals(that.id);
     }
 

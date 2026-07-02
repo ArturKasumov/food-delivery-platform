@@ -15,7 +15,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OrderServiceIntegrationTest extends AbstractPostgresIntegrationTest {
+class OrderServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private OrderService orderService;

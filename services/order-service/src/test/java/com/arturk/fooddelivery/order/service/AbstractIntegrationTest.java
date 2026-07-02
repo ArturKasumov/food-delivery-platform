@@ -8,7 +8,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @Testcontainers
-public abstract class AbstractPostgresIntegrationTest {
+public abstract class AbstractIntegrationTest {
 
     @Container
     @ServiceConnection

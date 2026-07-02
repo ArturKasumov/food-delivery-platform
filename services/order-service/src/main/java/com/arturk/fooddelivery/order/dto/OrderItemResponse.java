@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.order.dto;
 
-import com.arturk.fooddelivery.order.domain.OrderItem;
+import com.arturk.fooddelivery.order.domain.OrderItemEntity;
 
 import java.util.UUID;
 
@@ -10,7 +10,7 @@ public record OrderItemResponse(
         int quantity
 ) {
 
-    public static OrderItemResponse from(OrderItem item) {
+    public static OrderItemResponse from(OrderItemEntity item) {
         return new OrderItemResponse(
                 item.getId(),
                 item.getMenuItemId(),
