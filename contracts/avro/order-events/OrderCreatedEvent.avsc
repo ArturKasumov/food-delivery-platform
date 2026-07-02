@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "OrderCreatedEvent",
+  "namespace": "com.arturk.fooddelivery.contracts.avro.order.v1",
+  "doc": "Published by order-service after an order is persisted and waiting for payment.",
+  "fields": [
+    {
+      "name": "metadata",
+      "type": "com.arturk.fooddelivery.contracts.avro.common.v1.EventMetadata"
+    },
+    {
+      "name": "payload",
+      "type": "com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedEventPayload"
+    }
+  ]
+}

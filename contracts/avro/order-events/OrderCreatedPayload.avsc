@@ -1,0 +1,58 @@
+{
+  "type": "record",
+  "name": "OrderCreatedEventPayload",
+  "namespace": "com.arturk.fooddelivery.contracts.avro.order.v1",
+  "doc": "OrderCreatedEventPayload for OrderCreatedEvent.",
+  "fields": [
+    {
+      "name": "orderId",
+      "type": "string",
+      "doc": "Order identifier used by order-specific consumers."
+    },
+    {
+      "name": "customerId",
+      "type": "string",
+      "doc": "Customer that created the order."
+    },
+    {
+      "name": "restaurantId",
+      "type": "string",
+      "doc": "Restaurant that should prepare the order."
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "OrderStatus",
+        "symbols": [
+          "PENDING_PAYMENT",
+          "PAID",
+          "PAYMENT_FAILED",
+          "CONFIRMED",
+          "CANCELLED"
+        ]
+      },
+      "doc": "Order status at the moment the event was produced."
+    },
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "OrderCreatedItem",
+          "fields": [
+            {
+              "name": "menuItemId",
+              "type": "string"
+            },
+            {
+              "name": "quantity",
+              "type": "int"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="0.0.2-1" author="arturk">
+        <createTable tableName="outbox_events">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_outbox_events"/>
+            </column>
+            <column name="aggregate_type" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="aggregate_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_type" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="topic" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payload" type="jsonb">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retry_attempt" type="integer" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="error" type="text"/>
+            <column name="published_at" type="timestamp"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_outbox_events_status_created_at" tableName="outbox_events">
+            <column name="status"/>
+            <column name="created_at"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="outbox_events"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

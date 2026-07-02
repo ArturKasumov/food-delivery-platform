@@ -1,0 +1,33 @@
+{
+  "type": "record",
+  "name": "EventMetadata",
+  "namespace": "com.arturk.fooddelivery.contracts.avro.common.v1",
+  "doc": "Common metadata envelope embedded into every domain event.",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "Unique event identifier used by consumers for idempotency."
+    },
+    {
+      "name": "eventType",
+      "type": "string",
+      "doc": "Business event type, for example OrderCreated."
+    },
+    {
+      "name": "aggregateType",
+      "type": "string",
+      "doc": "Business aggregate type that produced this event, for example Order."
+    },
+    {
+      "name": "aggregateId",
+      "type": "string",
+      "doc": "Business aggregate identifier used as the Kafka message key."
+    },
+    {
+      "name": "occurredAt",
+      "type": "string",
+      "doc": "ISO-8601 UTC timestamp when the business event occurred, for example 2026-07-01T13:48:52.123Z."
+    }
+  ]
+}

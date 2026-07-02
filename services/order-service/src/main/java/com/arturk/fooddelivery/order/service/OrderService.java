@@ -24,6 +24,7 @@ public class OrderService {
 
     private final CustomerOrderRepository orderRepository;
     private final CatalogValidationClient catalogValidationClient;
+    private final OrderOutboxService orderOutboxService;
 
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
@@ -33,7 +34,7 @@ public class OrderService {
         request.items().forEach(item -> order.addItem(item.menuItemId(), item.quantity()));
 
         CustomerOrderEntity savedOrder = orderRepository.save(order);
-
+        orderOutboxService.saveOrderCreatedEvent(savedOrder);
         log.info("Order created: {}", savedOrder.getId());
 
         return OrderResponse.from(savedOrder);
