@@ -1,9 +1,35 @@
 package com.arturk.fooddelivery.order.repository;
 
 import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
+import com.arturk.fooddelivery.order.enums.OutboxEventStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public interface OutboxEventRepository extends JpaRepository<OutboxEventEntity, UUID> {
+
+    @Query(value = """
+            SELECT *
+            FROM outbox_events
+            WHERE (
+                status IN ('PENDING', 'FAILED')
+                OR (status = 'PROCESSING' AND updated_at < :processingBefore)
+            )
+            AND retry_attempt < :maxRetryAttempts
+            ORDER BY created_at
+            LIMIT :batchSize
+            FOR UPDATE SKIP LOCKED
+            """, nativeQuery = true)
+    List<OutboxEventEntity> findPublishableEventsForUpdate(
+            @Param("batchSize") int batchSize,
+            @Param("maxRetryAttempts") int maxRetryAttempts,
+            @Param("processingBefore") LocalDateTime processingBefore
+    );
+
+    List<OutboxEventEntity> findAllByIdInAndStatus(Collection<UUID> ids, OutboxEventStatus status);
 }

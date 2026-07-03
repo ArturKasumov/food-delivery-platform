@@ -19,11 +19,33 @@ spring:
       channels:
         catalog-service:
           address: ${CATALOG_GRPC_ADDRESS:static://localhost:9091}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      properties:
+        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8085}
+        acks: all
+        enable.idempotence: true
+        retries: 2147483647
+        delivery.timeout.ms: 10000
+        request.timeout.ms: 5000
+        retry.backoff.ms: 1000
+        max.in.flight.requests.per.connection: 1
+        max.block.ms: 10000
 
 app:
   kafka:
     topics:
-      order-events: ${KAFKA_TOPIC_ORDER_EVENTS:dev.order.events}
+      order-events: ${KAFKA_TOPIC_ORDER_EVENTS:dev.orders.events}
+  outbox:
+    publisher:
+      enabled: ${OUTBOX_PUBLISHER_ENABLED:true}
+      batch-size: ${OUTBOX_PUBLISHER_BATCH_SIZE:50}
+      fixed-delay: ${OUTBOX_PUBLISHER_FIXED_DELAY:5s}
+      max-retry-attempts: ${OUTBOX_PUBLISHER_MAX_RETRY_ATTEMPTS:3}
+      processing-timeout: ${OUTBOX_PUBLISHER_PROCESSING_TIMEOUT:3m}
 
   environment: ${APP_ENV:local}
 

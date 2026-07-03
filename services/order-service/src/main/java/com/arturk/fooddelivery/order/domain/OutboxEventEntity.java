@@ -44,7 +44,7 @@ public class OutboxEventEntity {
     private OutboxEventStatus status;
 
     @Column(name = "retry_attempt", nullable = false)
-    private int retryAttempt;
+    private int retryAttempt = 0;
 
     @Column(name = "error", columnDefinition = "text")
     private String error;
@@ -65,8 +65,7 @@ public class OutboxEventEntity {
                              UUID aggregateId,
                              String eventType,
                              String topic,
-                             String payload)
-    {
+                             String payload) {
         this.id = id;
         this.aggregateType = aggregateType;
         this.aggregateId = aggregateId;
@@ -75,5 +74,22 @@ public class OutboxEventEntity {
         this.payload = payload;
         this.status = OutboxEventStatus.PENDING;
         this.retryAttempt = 0;
+    }
+
+    public void markProcessing() {
+        this.status = OutboxEventStatus.PROCESSING;
+        this.error = null;
+    }
+
+    public void markPublished() {
+        this.status = OutboxEventStatus.PUBLISHED;
+        this.publishedAt = LocalDateTime.now();
+        this.error = null;
+    }
+
+    public void markFailed(String error) {
+        this.status = OutboxEventStatus.FAILED;
+        this.retryAttempt++;
+        this.error = error;
     }
 }

@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.order.config;
+package com.arturk.fooddelivery.order.config.properties;
 
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
