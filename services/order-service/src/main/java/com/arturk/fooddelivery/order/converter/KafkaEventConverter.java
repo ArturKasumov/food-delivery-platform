@@ -2,30 +2,29 @@ package com.arturk.fooddelivery.order.converter;
 
 import com.arturk.fooddelivery.contracts.avro.common.v1.EventMetadata;
 import com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedEvent;
-import com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedEventPayload;
 import com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedItem;
-import com.arturk.fooddelivery.order.dto.outbox.OrderCreatedEventOutboxPayload;
-import com.arturk.fooddelivery.order.dto.outbox.OutboxEventEnvelope;
+import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
+import com.arturk.fooddelivery.order.messaging.outbox.OrderCreatedEventPayload;
 import org.springframework.stereotype.Component;
 
 @Component
 public class KafkaEventConverter {
 
-    public OrderCreatedEvent toKafkaEvent(OutboxEventEnvelope<OrderCreatedEventOutboxPayload> envelope) {
+    public OrderCreatedEvent toKafkaEvent(OutboxEventEntity outboxEvent, OrderCreatedEventPayload payload) {
         return OrderCreatedEvent.newBuilder()
                 .setMetadata(EventMetadata.newBuilder()
-                        .setEventId(envelope.eventId().toString())
-                        .setEventType(envelope.eventType())
-                        .setAggregateType(envelope.aggregateType())
-                        .setAggregateId(envelope.aggregateId().toString())
-                        .setOccurredAt(envelope.occurredAt())
+                        .setEventId(outboxEvent.getId().toString())
+                        .setEventType(outboxEvent.getEventType())
+                        .setAggregateType(outboxEvent.getAggregateType())
+                        .setAggregateId(outboxEvent.getAggregateId().toString())
+                        .setOccurredAt(outboxEvent.getCreatedAt().toString())
                         .build())
-                .setPayload(OrderCreatedEventPayload.newBuilder()
-                        .setOrderId(envelope.payload().orderId().toString())
-                        .setCustomerId(envelope.payload().customerId().toString())
-                        .setRestaurantId(envelope.payload().restaurantId().toString())
-                        .setStatus(com.arturk.fooddelivery.contracts.avro.order.v1.OrderStatus.valueOf(envelope.payload().status().name()))
-                        .setItems(envelope.payload().items().stream()
+                .setPayload(com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedEventPayload.newBuilder()
+                        .setOrderId(payload.orderId().toString())
+                        .setCustomerId(payload.customerId().toString())
+                        .setRestaurantId(payload.restaurantId().toString())
+                        .setStatus(com.arturk.fooddelivery.contracts.avro.order.v1.OrderStatus.valueOf(payload.status().name()))
+                        .setItems(payload.items().stream()
                                 .map(item -> OrderCreatedItem.newBuilder()
                                         .setMenuItemId(item.menuItemId().toString())
                                         .setQuantity(item.quantity())

@@ -1,20 +1,19 @@
 package com.arturk.fooddelivery.order.service.outbox;
 
-import com.arturk.fooddelivery.order.constants.OrderEventTypes;
-import com.arturk.fooddelivery.order.converter.JsonConverter;
-import com.arturk.fooddelivery.order.converter.KafkaEventConverter;
+import com.arturk.fooddelivery.order.constants.CorrelationIdConstants;
 import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
-import com.arturk.fooddelivery.order.dto.outbox.OrderCreatedEventOutboxPayload;
-import com.arturk.fooddelivery.order.dto.outbox.OutboxEventEnvelope;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.arturk.fooddelivery.order.mapper.kafka.KafkaEventMapperRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,9 +23,8 @@ import java.util.UUID;
 @ConditionalOnProperty(prefix = "app.outbox.publisher", name = "enabled", havingValue = "true")
 public class OutboxEventPublisher {
 
-    private final OrderOutboxService outboxService;
-    private final JsonConverter jsonConverter;
-    private final KafkaEventConverter orderCreatedEventConverter;
+    private final OutboxService outboxService;
+    private final KafkaEventMapperRegistry kafkaEventMapperFactory;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Scheduled(fixedDelayString = "${app.outbox.publisher.fixed-delay}")
@@ -41,31 +39,37 @@ public class OutboxEventPublisher {
     }
 
     private void publish(OutboxEventEntity event) {
-        try {
-            kafkaTemplate.send(event.getTopic(), event.getAggregateId().toString(), toKafkaEvent(event)).get();
+        try(MDC.MDCCloseable ignored =
+                    MDC.putCloseable(CorrelationIdConstants.MDC_KEY, event.getCorrelationId())) {
+
+            ProducerRecord<String, Object> record = new ProducerRecord<>(
+                    event.getTopic(),
+                    event.getAggregateId().toString(),
+                    getKafkaEvent(event)
+            );
+
+            record.headers().add(
+                    CorrelationIdConstants.HEADER_NAME,
+                    event.getCorrelationId().getBytes(StandardCharsets.UTF_8)
+            );
+
+            kafkaTemplate.send(record).get();
             outboxService.markPublished(event);
             log.info("Published outbox event {} to topic {}", event.getId(), event.getTopic());
+
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
 
             outboxService.markFailed(event, exception);
-            log.warn("Publishing outbox event {} was interrupted, mark as Failed", event.getId(), exception);
+            log.warn("Publishing outbox event {} was interrupted, mark as failed", event.getId(), exception);
+
         } catch (Exception exception) {
             outboxService.markFailed(event, exception);
             log.warn("Failed to publish outbox event {}", event.getId(), exception);
         }
     }
 
-    private Object toKafkaEvent(OutboxEventEntity event) {
-        if (OrderEventTypes.ORDER_CREATED_EVENT_TYPE.equals(event.getEventType())) {
-            OutboxEventEnvelope<OrderCreatedEventOutboxPayload> envelope = jsonConverter.fromJson(
-                    event.getPayload(),
-                    new TypeReference<>() {
-                    }
-            );
-            return orderCreatedEventConverter.toKafkaEvent(envelope);
-        }
-
-        throw new IllegalArgumentException("Unsupported outbox event type: " + event.getEventType());
+    private Object getKafkaEvent(OutboxEventEntity event) {
+        return kafkaEventMapperFactory.getKafkaEventMapper(event.getEventType()).mapToKafkaEvent(event);
     }
 }

@@ -50,4 +50,17 @@
             <dropTable tableName="outbox_events"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="0.0.2-2" author="arturk">
+        <addColumn tableName="outbox_events">
+            <column name="correlation_id" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="outbox_events" columnName="correlation_id"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

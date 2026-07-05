@@ -1,15 +1,15 @@
-package com.arturk.fooddelivery.order.dto.outbox;
+package com.arturk.fooddelivery.order.messaging.outbox;
 
 import com.arturk.fooddelivery.order.enums.OrderStatus;
 
 import java.util.List;
 import java.util.UUID;
 
-public record OrderCreatedEventOutboxPayload(
+public record OrderCreatedEventPayload(
         UUID orderId,
         UUID customerId,
         UUID restaurantId,
         OrderStatus status,
-        List<OrderItemOutboxPayload> items
+        List<OrderItemCreatedEventPayload> items
 ) {
 }

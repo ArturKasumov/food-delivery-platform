@@ -8,7 +8,7 @@ import com.arturk.fooddelivery.order.dto.OrderResponse;
 import com.arturk.fooddelivery.order.exception.business.CatalogValidationException;
 import com.arturk.fooddelivery.order.exception.business.OrderNotFoundException;
 import com.arturk.fooddelivery.order.repository.CustomerOrderRepository;
-import com.arturk.fooddelivery.order.service.outbox.OrderOutboxService;
+import com.arturk.fooddelivery.order.service.outbox.OutboxService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +25,7 @@ public class OrderService {
 
     private final CustomerOrderRepository orderRepository;
     private final CatalogValidationClient catalogValidationClient;
-    private final OrderOutboxService orderOutboxService;
+    private final OutboxService orderOutboxService;
 
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {

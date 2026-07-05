@@ -25,6 +25,11 @@
       "doc": "Business aggregate identifier used as the Kafka message key."
     },
     {
+      "name": "correlationId",
+      "type": "string",
+      "doc": "Correlation identifier used to correlate events from different services."
+    },
+    {
       "name": "occurredAt",
       "type": "string",
       "doc": "ISO-8601 UTC timestamp when the business event occurred, for example 2026-07-01T13:48:52.123Z."
