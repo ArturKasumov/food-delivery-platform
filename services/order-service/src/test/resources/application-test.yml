@@ -1,0 +1,11 @@
+spring:
+  kafka:
+    listener:
+      auto-startup: false
+
+app:
+  kafka:
+    topics:
+      order-events: test.orders.events
+
+  environment: test
