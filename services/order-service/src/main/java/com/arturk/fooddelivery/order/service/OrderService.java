@@ -30,6 +30,7 @@ public class OrderService {
 
     @Transactional
     public OrderCreatedResponse createOrder(CreateOrderRequest request) {
+        log.info("Creating order for customer {}", request.customerId());
         validateOrder(request);
 
         CustomerOrderEntity order = new CustomerOrderEntity(request.customerId(), request.restaurantId());

@@ -39,33 +39,35 @@ public class OutboxEventPublisher {
     }
 
     private void publish(OutboxEventEntity event) {
-        try(MDC.MDCCloseable ignored =
-                    MDC.putCloseable(CorrelationIdConstants.MDC_KEY, event.getCorrelationId())) {
+        try (MDC.MDCCloseable ignored =
+                     MDC.putCloseable(CorrelationIdConstants.MDC_KEY, event.getCorrelationId())) {
 
-            ProducerRecord<String, Object> record = new ProducerRecord<>(
-                    event.getTopic(),
-                    event.getAggregateId().toString(),
-                    getKafkaEvent(event)
-            );
+            try {
+                ProducerRecord<String, Object> record = new ProducerRecord<>(
+                        event.getTopic(),
+                        event.getAggregateId().toString(),
+                        getKafkaEvent(event)
+                );
 
-            record.headers().add(
-                    CorrelationIdConstants.HEADER_NAME,
-                    event.getCorrelationId().getBytes(StandardCharsets.UTF_8)
-            );
+                record.headers().add(
+                        CorrelationIdConstants.HEADER_NAME,
+                        event.getCorrelationId().getBytes(StandardCharsets.UTF_8)
+                );
 
-            kafkaTemplate.send(record).get();
-            outboxService.markPublished(event);
-            log.info("Published outbox event {} to topic {}", event.getId(), event.getTopic());
+                kafkaTemplate.send(record).get();
+                outboxService.markPublished(event);
+                log.info("Published outbox event {} to topic {}", event.getId(), event.getTopic());
 
-        } catch (InterruptedException exception) {
-            Thread.currentThread().interrupt();
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
 
-            outboxService.markFailed(event, exception.getMessage());
-            log.warn("Publishing outbox event {} was interrupted, mark as failed", event.getId(), exception);
+                outboxService.markFailed(event, exception.getMessage());
+                log.warn("Publishing outbox event {} was interrupted, mark as failed", event.getId(), exception);
 
-        } catch (Exception exception) {
-            outboxService.markFailed(event, exception.getMessage());
-            log.warn("Failed to publish outbox event {}", event.getId(), exception);
+            } catch (Exception exception) {
+                outboxService.markFailed(event, exception.getMessage());
+                log.warn("Failed to publish outbox event {}", event.getId(), exception);
+            }
         }
     }
 
