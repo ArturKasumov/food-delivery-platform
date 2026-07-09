@@ -18,7 +18,7 @@ public class CatalogValidationGrpcService extends CatalogValidationServiceGrpc.C
     private final CatalogValidationService catalogValidationService;
 
     @Override
-    public void validateOrder(
+    public void isOrderValid(
             ValidateOrderRequest request,
             StreamObserver<ValidateOrderResponse> responseObserver
     ) {

@@ -2,8 +2,6 @@ package com.arturk.fooddelivery.catalog.service.validation;
 
 import com.arturk.fooddelivery.catalog.dto.entity.MenuItemEntity;
 import com.arturk.fooddelivery.catalog.dto.entity.RestaurantEntity;
-import com.arturk.fooddelivery.catalog.exception.business.MenuItemNotFoundException;
-import com.arturk.fooddelivery.catalog.exception.business.RestaurantNotFoundException;
 import com.arturk.fooddelivery.catalog.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,25 +24,21 @@ public class CatalogValidationService {
 
     @Transactional(readOnly = true)
     public boolean isOrderValid(UUID restaurantId, List<UUID> menuItemIds) {
-        try {
-            log.info("Validating order for restaurant: {}, items: {}", restaurantId, menuItemIds);
-            RestaurantEntity restaurantEntity = restaurantRepository
-                    .findById(restaurantId)
-                    .orElseThrow(RestaurantNotFoundException::new);
+        log.info("Validating order for restaurant: {}, items: {}", restaurantId, menuItemIds);
+        Optional<RestaurantEntity> restaurantEntityOptional = restaurantRepository.findById(restaurantId);
 
-            List<UUID> missingMenuItemIds = findMissingMenuItemIds(restaurantEntity, menuItemIds);
-
-            if (CollectionUtils.isNotEmpty(missingMenuItemIds)) {
-                throw new MenuItemNotFoundException();
-            }
-            return true;
-        } catch (RestaurantNotFoundException | MenuItemNotFoundException exception) {
-            log.error("Order validation failed: {}.", exception.getMessage());
+        if (restaurantEntityOptional.isEmpty()) {
+            log.warn("Order validation failed: restaurant not found, restaurantId: {}.", restaurantId);
             return false;
-        } catch (Exception exception) {
-            log.error("Order validation failed.", exception);
-            throw exception;
         }
+
+        List<UUID> missingMenuItemIds = findMissingMenuItemIds(restaurantEntityOptional.get(), menuItemIds);
+
+        if (CollectionUtils.isNotEmpty(missingMenuItemIds)) {
+            log.warn("Order validation failed: missing menu items: {}.", missingMenuItemIds);
+            return false;
+        }
+        return true;
     }
 
     private List<UUID> findMissingMenuItemIds(RestaurantEntity restaurantEntity, List<UUID> menuItemIds) {
