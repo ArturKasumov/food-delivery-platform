@@ -29,9 +29,9 @@ public class CatalogValidationGrpcService extends CatalogValidationServiceGrpc.C
                 .map(UUID::fromString)
                 .toList();
 
-        catalogValidationService.validateOrder(restaurantId, menuItemIds);
+        boolean isValid = catalogValidationService.isOrderValid(restaurantId, menuItemIds);
 
-        responseObserver.onNext(ValidateOrderResponse.newBuilder().setValid(true).build());
+        responseObserver.onNext(ValidateOrderResponse.newBuilder().setValid(isValid).build());
         responseObserver.onCompleted();
     }
 }

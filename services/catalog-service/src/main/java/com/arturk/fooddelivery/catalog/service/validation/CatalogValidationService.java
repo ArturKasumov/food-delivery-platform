@@ -7,10 +7,13 @@ import com.arturk.fooddelivery.catalog.exception.business.RestaurantNotFoundExce
 import com.arturk.fooddelivery.catalog.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,16 +24,25 @@ public class CatalogValidationService {
     private final RestaurantRepository restaurantRepository;
 
     @Transactional(readOnly = true)
-    public void validateOrder(UUID restaurantId, List<UUID> menuItemIds) {
-        log.info("Validating order for restaurant: {}, items: {}", restaurantId, menuItemIds);
-        RestaurantEntity restaurantEntity = restaurantRepository
-                .findById(restaurantId)
-                .orElseThrow(RestaurantNotFoundException::new);
+    public boolean isOrderValid(UUID restaurantId, List<UUID> menuItemIds) {
+        try {
+            log.info("Validating order for restaurant: {}, items: {}", restaurantId, menuItemIds);
+            RestaurantEntity restaurantEntity = restaurantRepository
+                    .findById(restaurantId)
+                    .orElseThrow(RestaurantNotFoundException::new);
 
-        List<UUID> missingMenuItemIds = findMissingMenuItemIds(restaurantEntity, menuItemIds);
+            List<UUID> missingMenuItemIds = findMissingMenuItemIds(restaurantEntity, menuItemIds);
 
-        if (!missingMenuItemIds.isEmpty()) {
-            throw new MenuItemNotFoundException();
+            if (CollectionUtils.isNotEmpty(missingMenuItemIds)) {
+                throw new MenuItemNotFoundException();
+            }
+            return true;
+        } catch (RestaurantNotFoundException | MenuItemNotFoundException exception) {
+            log.error("Order validation failed: {}.", exception.getMessage());
+            return false;
+        } catch (Exception exception) {
+            log.error("Order validation failed.", exception);
+            throw exception;
         }
     }
 

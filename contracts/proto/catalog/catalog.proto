@@ -7,7 +7,7 @@ option java_package = "com.arturk.fooddelivery.contracts.catalog.v1";
 option java_outer_classname = "CatalogValidationProto";
 
 service CatalogValidationService {
-  rpc ValidateOrder(ValidateOrderRequest) returns (ValidateOrderResponse);
+  rpc IsOrderValid(ValidateOrderRequest) returns (ValidateOrderResponse);
 }
 
 message ValidateOrderRequest {

@@ -24,7 +24,7 @@ public class CatalogValidationClient {
                 .build();
 
         try {
-            ValidateOrderResponse response = catalogValidationStub.validateOrder(request);
+            ValidateOrderResponse response = catalogValidationStub.isOrderValid(request);
             return response.getValid();
         } catch (StatusRuntimeException exception) {
             throw new CatalogServiceUnavailableException(exception.getStatus().toString());
