@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import static com.arturk.fooddelivery.order.constants.OrderEventTypes.ORDER_AGGREGATE_TYPE;
@@ -20,7 +19,7 @@ import static com.arturk.fooddelivery.order.constants.OrderEventTypes.ORDER_CREA
 
 @Component
 @RequiredArgsConstructor
-public class OrderCreatedEventMapper implements OutboxEventMapper<CustomerOrderEntity> {
+public class OutboxOrderCreatedEventMapper implements OutboxEventMapper<CustomerOrderEntity> {
 
     private final OutboxEventsConverter outboxEventsConverter;
     private final JsonConverter jsonConverter;

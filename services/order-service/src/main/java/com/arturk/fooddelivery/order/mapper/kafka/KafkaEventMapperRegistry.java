@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 public class KafkaEventMapperRegistry {
 
     private final List<KafkaEventMapper> kafkaEventMappers;
-    private final Map<String, KafkaEventMapper> kafkaEventMapperMap;
+    private final Map<String, KafkaEventMapper> kafkaEventMapperMap = new HashMap<>();
 
     @PostConstruct
     public void init() {

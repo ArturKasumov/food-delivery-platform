@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class OrderCreatedEventMapper implements KafkaEventMapper {
+public class KafkaOrderCreatedEventMapper implements KafkaEventMapper {
 
     private final JsonConverter jsonConverter;
     private final KafkaEventConverter orderCreatedEventConverter;

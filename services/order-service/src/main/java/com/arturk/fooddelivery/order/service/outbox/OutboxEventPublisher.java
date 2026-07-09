@@ -60,11 +60,11 @@ public class OutboxEventPublisher {
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
 
-            outboxService.markFailed(event, exception);
+            outboxService.markFailed(event, exception.getMessage());
             log.warn("Publishing outbox event {} was interrupted, mark as failed", event.getId(), exception);
 
         } catch (Exception exception) {
-            outboxService.markFailed(event, exception);
+            outboxService.markFailed(event, exception.getMessage());
             log.warn("Failed to publish outbox event {}", event.getId(), exception);
         }
     }

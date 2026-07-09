@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +27,9 @@ public class OutboxEventMapperRegistry {
 
     @SuppressWarnings("unchecked")
     public <T> OutboxEventMapper<T> getOutboxEventMapper(String eventType, T entity) {
-        Objects.requireNonNull(entity, "Outbox event source entity must not be null");
+        if (entity == null) {
+            throw new IllegalArgumentException("Outbox event source entity must not be null");
+        }
 
         OutboxEventMapper<?> mapper = outboxEventMapperMap.get(eventType);
 

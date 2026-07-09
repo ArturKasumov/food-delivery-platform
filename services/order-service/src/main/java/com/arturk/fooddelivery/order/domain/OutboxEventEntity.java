@@ -4,6 +4,7 @@ import com.arturk.fooddelivery.order.enums.OutboxEventStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "outbox_events")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
@@ -32,7 +34,7 @@ public class OutboxEventEntity {
     @Column(name = "event_type", nullable = false, length = 30)
     private String eventType;
 
-    @Column(name = "correlation_id", nullable = false, length = 30)
+    @Column(name = "correlation_id", nullable = false, length = 64)
     private String correlationId;
 
     @Column(name = "topic", nullable = false, length = 30)

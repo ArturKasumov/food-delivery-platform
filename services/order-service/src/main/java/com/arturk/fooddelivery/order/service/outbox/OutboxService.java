@@ -58,8 +58,8 @@ public class OutboxService {
         outboxEventRepository.save(event);
     }
 
-    public void markFailed(OutboxEventEntity event, Exception exception) {
-        event.markFailed(exception.getMessage());
+    public void markFailed(OutboxEventEntity event, String message) {
+        event.markFailed(message);
         outboxEventRepository.save(event);
     }
 }
