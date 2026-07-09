@@ -68,7 +68,7 @@ class OrderServiceIntegrationTest extends AbstractIntegrationTest {
         ));
 
         //then
-        CustomerOrderEntity savedOrder = orderRepository.findById(order.id()).orElseThrow();
+        CustomerOrderEntity savedOrder = orderRepository.findOrderWithItemsById(order.id()).orElseThrow();
 
         assertThat(savedOrder.getId()).isNotNull();
         assertThat(savedOrder.getCustomerId()).isEqualTo(customerId);

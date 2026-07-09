@@ -1,13 +1,16 @@
 package com.arturk.fooddelivery.order.service.outbox;
 
 import com.arturk.fooddelivery.order.AbstractIntegrationTest;
+import com.arturk.fooddelivery.order.constants.CorrelationIdConstants;
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
 import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
 import com.arturk.fooddelivery.order.enums.OutboxEventStatus;
 import com.arturk.fooddelivery.order.repository.OutboxEventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
@@ -33,9 +36,13 @@ class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private TransactionTemplate transactionTemplate;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void cleanDatabase() {
         outboxEventRepository.deleteAll();
+        MDC.put(CorrelationIdConstants.MDC_KEY, UUID.randomUUID().toString());
     }
 
     @Test
@@ -106,8 +113,11 @@ class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
     void claimPublishableEventIds_shouldReclaimStuckProcessingEventAfterTimeout() {
         // given
         OutboxEventEntity stuckEvent = createOutboxEvent(OutboxEventStatus.PROCESSING);
-        stuckEvent.setUpdatedAt(LocalDateTime.now().minusMinutes(outboxPublisherProperties.processingTimeout().toMinutes() + 1));
         saveOutboxEvent(stuckEvent);
+        setUpdatedAt(
+                stuckEvent.getId(),
+                LocalDateTime.now().minus(outboxPublisherProperties.processingTimeout()).minusMinutes(1)
+        );
 
         // when
         List<UUID> ids = outboxService.claimPublishableEventIds();
@@ -123,8 +133,11 @@ class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
     void claimPublishableEventIds_shouldNotClaimFreshProcessingEvent() {
         // given
         OutboxEventEntity stuckEvent = createOutboxEvent(OutboxEventStatus.PROCESSING);
-        stuckEvent.setUpdatedAt(LocalDateTime.now().minusMinutes(outboxPublisherProperties.processingTimeout().toMinutes() - 1));
         saveOutboxEvent(stuckEvent);
+        setUpdatedAt(
+                stuckEvent.getId(),
+                LocalDateTime.now().minus(outboxPublisherProperties.processingTimeout()).plusMinutes(1)
+        );
 
         // when
         List<UUID> ids = outboxService.claimPublishableEventIds();
@@ -279,5 +292,13 @@ class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
 
     private OutboxEventEntity saveOutboxEvent(OutboxEventEntity event) {
         return outboxEventRepository.save(event);
+    }
+
+    private void setUpdatedAt(UUID eventId, LocalDateTime updatedAt) {
+        jdbcTemplate.update(
+                "UPDATE outbox_events SET updated_at = ? WHERE id = ?",
+                updatedAt,
+                eventId
+        );
     }
 }

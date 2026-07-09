@@ -17,6 +17,7 @@ public class KafkaEventConverter {
                         .setEventType(outboxEvent.getEventType())
                         .setAggregateType(outboxEvent.getAggregateType())
                         .setAggregateId(outboxEvent.getAggregateId().toString())
+                        .setCorrelationId(outboxEvent.getCorrelationId())
                         .setOccurredAt(outboxEvent.getCreatedAt().toString())
                         .build())
                 .setPayload(com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedEventPayload.newBuilder()

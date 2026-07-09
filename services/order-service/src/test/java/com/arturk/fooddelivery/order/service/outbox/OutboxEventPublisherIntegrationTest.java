@@ -68,13 +68,14 @@ class OutboxEventPublisherIntegrationTest extends AbstractIntegrationTest {
         ));
 
         try (KafkaConsumer<String, Object> consumer = kafkaTestClient.getKafkaConsumer()) {
-            consumer.subscribe(List.of(kafkaTopicsProperties.orderEvents()));
+            kafkaTestClient.subscribeFromEnd(consumer, kafkaTopicsProperties.orderEvents());
 
-            // when
+            //when
             outboxEventPublisher.publishPendingEvents();
 
-            // then
-            ConsumerRecord<String, Object> record = kafkaTestClient.pollOrderCreatedEventByEventId(
+            //then
+            ConsumerRecord<String, Object> record = kafkaTestClient.pollKafkaEventByEventId(
+                    consumer,
                     event.getId(),
                     Duration.ofSeconds(kafkaTestClient.RECORD_TIMEOUT_SECONDS)
             );

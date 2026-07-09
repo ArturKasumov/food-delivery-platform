@@ -41,18 +41,6 @@ public class KafkaTestClient {
         );
     }
 
-    public ConsumerRecord<String, Object> pollOrderCreatedEventByEventId(UUID expectedEventId,
-                                                                         Duration timeout
-    ) {
-        try (KafkaConsumer<String, Object> consumer = getKafkaConsumer()) {
-            consumer.subscribe(List.of(kafkaTopicsProperties.orderEvents()));
-
-            waitForAssignment(consumer);
-
-            return pollKafkaEventByEventId(consumer, expectedEventId, timeout);
-        }
-    }
-
     private void waitForAssignment(KafkaConsumer<String, Object> consumer) {
         long deadline = System.nanoTime()
                 + Duration.ofSeconds(RECORD_TIMEOUT_SECONDS).toNanos();
@@ -65,9 +53,9 @@ public class KafkaTestClient {
         assertThat(consumer.assignment()).isNotEmpty();
     }
 
-    private static ConsumerRecord<String, Object> pollKafkaEventByEventId(KafkaConsumer<String, Object> consumer,
-                                                                            UUID expectedEventId,
-                                                                            Duration timeout
+    public ConsumerRecord<String, Object> pollKafkaEventByEventId(KafkaConsumer<String, Object> consumer,
+                                                                          UUID expectedEventId,
+                                                                          Duration timeout
     ) {
         long deadline = System.nanoTime() + timeout.toNanos();
 
@@ -86,6 +74,13 @@ public class KafkaTestClient {
                 "Kafka event with eventId '%s' was not received within %s"
                         .formatted(expectedEventId, timeout)
         );
+    }
+
+    public void subscribeFromEnd(KafkaConsumer<String, Object> consumer, String topic) {
+        consumer.subscribe(List.of(topic));
+        waitForAssignment(consumer);
+        consumer.seekToEnd(consumer.assignment());
+        consumer.assignment().forEach(consumer::position);
     }
 }
 
