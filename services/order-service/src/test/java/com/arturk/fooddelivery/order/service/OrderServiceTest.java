@@ -3,8 +3,8 @@ package com.arturk.fooddelivery.order.service;
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
 import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
 import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
+import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
 import com.arturk.fooddelivery.order.dto.OrderResponse;
-import com.arturk.fooddelivery.order.enums.OrderStatus;
 import com.arturk.fooddelivery.order.exception.business.CatalogValidationException;
 import com.arturk.fooddelivery.order.exception.business.OrderNotFoundException;
 import com.arturk.fooddelivery.order.repository.CustomerOrderRepository;
@@ -25,7 +25,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,23 +59,17 @@ class OrderServiceTest {
         when(orderRepository.save(any(CustomerOrderEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         //when
-        OrderResponse response = orderService.createOrder(request);
+        OrderCreatedResponse response = orderService.createOrder(request);
 
         //then
-        assertThat(response.customerId()).isEqualTo(customerId);
-        assertThat(response.restaurantId()).isEqualTo(restaurantId);
-        assertThat(response.status()).isEqualTo(OrderStatus.PENDING_PAYMENT);
-        assertThat(response.items())
-                .hasSize(1)
-                .first()
-                .satisfies(item -> {
-                    assertThat(item.menuItemId()).isEqualTo(menuItemId);
-                    assertThat(item.quantity()).isEqualTo(2);
-                });
-
         ArgumentCaptor<CustomerOrderEntity> savedOrderCaptor = ArgumentCaptor.forClass(CustomerOrderEntity.class);
         verify(orderRepository, times(1)).save(savedOrderCaptor.capture());
-        verify(outboxService, times(1)).saveOrderCreatedEvent(savedOrderCaptor.getValue());
+
+        CustomerOrderEntity savedOrder = savedOrderCaptor.getValue();
+        verify(outboxService).saveOrderCreatedEvent(savedOrder);
+
+        assertThat(response).isNotNull();
+        assertThat(response.id()).isEqualTo(savedOrder.getId());
     }
 
     @Test

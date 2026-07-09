@@ -1,9 +1,6 @@
 package com.arturk.fooddelivery.order.controller;
 
-import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
-import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
-import com.arturk.fooddelivery.order.dto.OrderItemResponse;
-import com.arturk.fooddelivery.order.dto.OrderResponse;
+import com.arturk.fooddelivery.order.dto.*;
 import com.arturk.fooddelivery.order.enums.OrderStatus;
 import com.arturk.fooddelivery.order.exception.business.CatalogValidationException;
 import com.arturk.fooddelivery.order.exception.business.OrderNotFoundException;
@@ -58,14 +55,8 @@ class OrderControllerTest {
                 List.of(new CreateOrderItemRequest(menuItemId, 1))
         );
 
-        when(orderService.createOrder(any(CreateOrderRequest.class))).thenReturn(new OrderResponse(
-                orderId,
-                customerId,
-                restaurantId,
-                OrderStatus.PENDING_PAYMENT,
-                List.of(new OrderItemResponse(UUID.randomUUID(), menuItemId, 1)),
-                LocalDateTime.now(),
-                LocalDateTime.now()
+        when(orderService.createOrder(any(CreateOrderRequest.class))).thenReturn(new OrderCreatedResponse(
+                orderId
         ));
 
         //when //then
@@ -74,12 +65,7 @@ class OrderControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("X-Correlation-Id"))
-                .andExpect(jsonPath("$.id").value(orderId.toString()))
-                .andExpect(jsonPath("$.customerId").value(customerId.toString()))
-                .andExpect(jsonPath("$.restaurantId").value(restaurantId.toString()))
-                .andExpect(jsonPath("$.status").value(OrderStatus.PENDING_PAYMENT.name()))
-                .andExpect(jsonPath("$.items[0].menuItemId").value(menuItemId.toString()))
-                .andExpect(jsonPath("$.items[0].quantity").value(1));
+                .andExpect(jsonPath("$.id").value(orderId.toString()));
     }
 
     @Test
@@ -143,13 +129,14 @@ class OrderControllerTest {
         UUID orderId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
         UUID restaurantId = UUID.randomUUID();
+        UUID menuItemId = UUID.randomUUID();
 
         when(orderService.getOrder(orderId)).thenReturn(new OrderResponse(
                 orderId,
                 customerId,
                 restaurantId,
                 OrderStatus.PENDING_PAYMENT,
-                List.of(),
+                List.of(new OrderItemResponse(UUID.randomUUID(), menuItemId, 1)),
                 LocalDateTime.now(),
                 LocalDateTime.now()
         ));
@@ -158,7 +145,12 @@ class OrderControllerTest {
         mockMvc.perform(get("/api/v1/orders/{orderId}", orderId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(orderId.toString()))
-                .andExpect(jsonPath("$.customerId").value(customerId.toString()));
+                .andExpect(jsonPath("$.customerId").value(customerId.toString()))
+                .andExpect(jsonPath("$.customerId").value(customerId.toString()))
+                .andExpect(jsonPath("$.restaurantId").value(restaurantId.toString()))
+                .andExpect(jsonPath("$.status").value(OrderStatus.PENDING_PAYMENT.name()))
+                .andExpect(jsonPath("$.items[0].menuItemId").value(menuItemId.toString()))
+                .andExpect(jsonPath("$.items[0].quantity").value(1));
     }
 
     @Test

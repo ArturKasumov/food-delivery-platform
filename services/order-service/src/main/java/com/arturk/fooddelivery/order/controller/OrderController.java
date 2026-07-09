@@ -1,6 +1,7 @@
 package com.arturk.fooddelivery.order.controller;
 
 import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
+import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
 import com.arturk.fooddelivery.order.dto.OrderResponse;
 import com.arturk.fooddelivery.order.service.OrderService;
 import jakarta.validation.Valid;
@@ -28,7 +29,7 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderResponse createOrder(@Valid @RequestBody CreateOrderRequest request) {
+    public OrderCreatedResponse createOrder(@Valid @RequestBody CreateOrderRequest request) {
         return orderService.createOrder(request);
     }
 

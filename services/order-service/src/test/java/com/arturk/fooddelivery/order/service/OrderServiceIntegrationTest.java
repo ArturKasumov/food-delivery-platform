@@ -1,16 +1,16 @@
 package com.arturk.fooddelivery.order.service;
 
+import com.arturk.fooddelivery.order.AbstractIntegrationTest;
 import com.arturk.fooddelivery.order.constants.CorrelationIdConstants;
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
-import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
-import com.arturk.fooddelivery.order.enums.OrderStatus;
 import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
 import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
+import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
 import com.arturk.fooddelivery.order.dto.OrderResponse;
+import com.arturk.fooddelivery.order.enums.OrderStatus;
 import com.arturk.fooddelivery.order.enums.OutboxEventStatus;
 import com.arturk.fooddelivery.order.repository.CustomerOrderRepository;
 import com.arturk.fooddelivery.order.repository.OutboxEventRepository;
-import com.arturk.fooddelivery.order.AbstractIntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +23,9 @@ import java.util.UUID;
 
 import static com.arturk.fooddelivery.order.constants.OrderEventTypes.ORDER_CREATED_EVENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.when;
 
 class OrderServiceIntegrationTest extends AbstractIntegrationTest {
 
@@ -61,7 +61,7 @@ class OrderServiceIntegrationTest extends AbstractIntegrationTest {
         UUID menuItemId = UUID.randomUUID();
 
         //when
-        OrderResponse order = orderService.createOrder(new CreateOrderRequest(
+        OrderCreatedResponse order = orderService.createOrder(new CreateOrderRequest(
                 customerId,
                 restaurantId,
                 List.of(new CreateOrderItemRequest(menuItemId, 1))

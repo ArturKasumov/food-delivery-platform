@@ -1,6 +1,7 @@
 package com.arturk.fooddelivery.order.service;
 
 import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
+import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
 import com.arturk.fooddelivery.order.service.grpc.client.CatalogValidationClient;
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
 import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
@@ -28,7 +29,7 @@ public class OrderService {
     private final OutboxService orderOutboxService;
 
     @Transactional
-    public OrderResponse createOrder(CreateOrderRequest request) {
+    public OrderCreatedResponse createOrder(CreateOrderRequest request) {
         validateOrder(request);
 
         CustomerOrderEntity order = new CustomerOrderEntity(request.customerId(), request.restaurantId());
@@ -38,7 +39,7 @@ public class OrderService {
         orderOutboxService.saveOrderCreatedEvent(savedOrder);
         log.info("Order created: {}", savedOrder.getId());
 
-        return OrderResponse.from(savedOrder);
+        return OrderCreatedResponse.from(savedOrder);
     }
 
     @Transactional(readOnly = true)
