@@ -308,6 +308,23 @@
                             </imports>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>payment-events</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>schema</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/../../contracts/avro/payment-events</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
+                            <stringType>String</stringType>
+                            <imports>
+                                <import>${project.basedir}/../../contracts/avro/common/EventMetadata.avsc</import>
+                                <import>${project.basedir}/../../contracts/avro/payment-events/PaymentCompletedPayload.avsc</import>
+                                <import>${project.basedir}/../../contracts/avro/payment-events/PaymentFailedPayload.avsc</import>
+                            </imports>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

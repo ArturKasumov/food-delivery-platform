@@ -1,6 +1,9 @@
 package com.arturk.fooddelivery.order.service;
 
+import com.arturk.fooddelivery.contracts.avro.payment.v1.PaymentCompletedEvent;
+import com.arturk.fooddelivery.contracts.avro.payment.v1.PaymentFailedEvent;
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
+import com.arturk.fooddelivery.order.domain.ProcessedEventEntity;
 import com.arturk.fooddelivery.order.dto.CatalogOrderValidationResult;
 import com.arturk.fooddelivery.order.dto.request.CreateOrderRequest;
 import com.arturk.fooddelivery.order.dto.response.OrderCreatedResponse;
@@ -8,6 +11,7 @@ import com.arturk.fooddelivery.order.dto.response.OrderResponse;
 import com.arturk.fooddelivery.order.exception.business.CatalogValidationException;
 import com.arturk.fooddelivery.order.exception.business.OrderNotFoundException;
 import com.arturk.fooddelivery.order.repository.CustomerOrderRepository;
+import com.arturk.fooddelivery.order.repository.ProcessedEventRepository;
 import com.arturk.fooddelivery.order.service.grpc.client.CatalogValidationClient;
 import com.arturk.fooddelivery.order.service.outbox.OutboxService;
 import lombok.AllArgsConstructor;
@@ -27,6 +31,7 @@ public class OrderService {
     private final CustomerOrderRepository orderRepository;
     private final CatalogValidationClient catalogValidationClient;
     private final OutboxService orderOutboxService;
+    private final ProcessedEventRepository processedEventRepository;
 
     @Transactional
     public OrderCreatedResponse createOrder(CreateOrderRequest request) {
@@ -55,6 +60,40 @@ public class OrderService {
                 .stream()
                 .map(OrderResponse::from)
                 .toList();
+    }
+
+    @Transactional
+    public void processPaymentCompletedEvent(PaymentCompletedEvent event) {
+        UUID eventId = UUID.fromString(event.getMetadata().getEventId());
+        UUID orderId = UUID.fromString(event.getPayload().getOrderId());
+
+        if (processedEventRepository.existsById(eventId)) {
+            log.warn("Skipping already processed event: {}", eventId);
+            return;
+        }
+
+        CustomerOrderEntity order = getOrderById(orderId);
+        order.applyPaymentCompleted();
+        orderRepository.save(order);
+        processedEventRepository.save(new ProcessedEventEntity(eventId, event.getMetadata().getEventType()));
+        log.info("Order: {} moved to paid after payment completed", orderId);
+    }
+
+    @Transactional
+    public void processPaymentFailedEvent(PaymentFailedEvent event) {
+        UUID eventId = UUID.fromString(event.getMetadata().getEventId());
+        UUID orderId = UUID.fromString(event.getPayload().getOrderId());
+
+        if (processedEventRepository.existsById(eventId)) {
+            log.warn("Skipping already processed event: {}", eventId);
+            return;
+        }
+
+        CustomerOrderEntity order = getOrderById(orderId);
+        order.applyPaymentFailed();
+        orderRepository.save(order);
+        processedEventRepository.save(new ProcessedEventEntity(eventId, event.getMetadata().getEventType()));
+        log.info("Order: {} moved to payment failed after payment failure", orderId);
     }
 
     private CustomerOrderEntity getOrderById(UUID orderId) {

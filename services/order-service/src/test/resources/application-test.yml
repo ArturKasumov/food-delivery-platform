@@ -1,5 +1,7 @@
 spring:
   kafka:
+    consumer:
+      group-id: test-order-service
     listener:
       auto-startup: false
 
@@ -7,5 +9,6 @@ app:
   kafka:
     topics:
       order-events: test.orders.events
+      payment-events: test.payments.events
 
   environment: test

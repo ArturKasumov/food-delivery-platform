@@ -62,6 +62,14 @@ public class CustomerOrderEntity {
         items.add(new OrderItemEntity(this, menuItemId, quantity));
     }
 
+    public void applyPaymentCompleted() {
+        this.status = OrderStatus.PAID;
+    }
+
+    public void applyPaymentFailed() {
+        this.status = OrderStatus.PAYMENT_FAILED;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

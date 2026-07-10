@@ -21,11 +21,23 @@ spring:
           address: ${CATALOG_GRPC_ADDRESS:static://localhost:9091}
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    listener:
+      ack-mode: record
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:order-service}
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      properties:
+        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8085}
+        specific.avro.reader: true
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       properties:
         schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8085}
+        value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
         acks: all
         enable.idempotence: true
         retries: 2147483647
@@ -39,6 +51,7 @@ app:
   kafka:
     topics:
       order-events: ${KAFKA_TOPIC_ORDER_EVENTS:dev.orders.events}
+      payment-events: ${KAFKA_TOPIC_PAYMENT_EVENTS:dev.payments.events}
   outbox:
     publisher:
       enabled: ${OUTBOX_PUBLISHER_ENABLED:true}

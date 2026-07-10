@@ -16,4 +16,22 @@
             <dropColumn tableName="orders" columnName="total_amount"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="0.0.1-2" author="arturk">
+        <createTable tableName="processed_events">
+            <column name="event_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_processed_events"/>
+            </column>
+            <column name="event_type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processed_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="processed_events"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
