@@ -1,8 +1,8 @@
 package com.arturk.fooddelivery.catalog.service.validation;
 
 import com.arturk.fooddelivery.catalog.dto.grpc.OrderItemValidationRequest;
-import com.arturk.fooddelivery.catalog.dto.entity.MenuItemEntity;
-import com.arturk.fooddelivery.catalog.dto.entity.RestaurantEntity;
+import com.arturk.fooddelivery.catalog.domain.MenuItemEntity;
+import com.arturk.fooddelivery.catalog.domain.RestaurantEntity;
 import com.arturk.fooddelivery.catalog.dto.grpc.OrderValidationResult;
 import com.arturk.fooddelivery.catalog.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;

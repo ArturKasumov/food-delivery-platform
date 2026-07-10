@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.catalog.dto;
 
-import com.arturk.fooddelivery.catalog.dto.entity.RestaurantEntity;
+import com.arturk.fooddelivery.catalog.domain.RestaurantEntity;
 import com.arturk.fooddelivery.catalog.enums.RestaurantStatus;
 
 import java.util.UUID;

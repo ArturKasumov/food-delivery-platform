@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.catalog.dto.entity;
+package com.arturk.fooddelivery.catalog.domain;
 
 import com.arturk.fooddelivery.catalog.enums.MenuItemStatus;
 import jakarta.persistence.Column;

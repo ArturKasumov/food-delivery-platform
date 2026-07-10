@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.catalog.repository;
 
-import com.arturk.fooddelivery.catalog.dto.entity.MenuItemEntity;
+import com.arturk.fooddelivery.catalog.domain.MenuItemEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

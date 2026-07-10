@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.catalog.repository;
 
-import com.arturk.fooddelivery.catalog.dto.entity.RestaurantEntity;
+import com.arturk.fooddelivery.catalog.domain.RestaurantEntity;
 import com.arturk.fooddelivery.catalog.enums.RestaurantStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 

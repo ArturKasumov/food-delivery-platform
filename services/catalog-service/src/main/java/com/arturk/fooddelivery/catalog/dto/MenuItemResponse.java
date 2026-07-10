@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.catalog.dto;
 
-import com.arturk.fooddelivery.catalog.dto.entity.MenuItemEntity;
+import com.arturk.fooddelivery.catalog.domain.MenuItemEntity;
 import com.arturk.fooddelivery.catalog.enums.MenuItemStatus;
 
 import java.math.BigDecimal;
