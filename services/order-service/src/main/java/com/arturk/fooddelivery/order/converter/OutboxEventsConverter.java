@@ -14,6 +14,7 @@ public class OutboxEventsConverter {
                 order.getCustomerId(),
                 order.getRestaurantId(),
                 order.getStatus(),
+                order.getTotalAmount(),
                 order.getItems().stream()
                         .map(item -> new OrderItemCreatedEventPayload(item.getMenuItemId(), item.getQuantity()))
                         .toList()

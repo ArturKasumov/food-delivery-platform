@@ -3,6 +3,7 @@ package com.arturk.fooddelivery.order.service;
 import com.arturk.fooddelivery.order.AbstractIntegrationTest;
 import com.arturk.fooddelivery.order.constants.CorrelationIdConstants;
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
+import com.arturk.fooddelivery.order.dto.CatalogOrderValidationResult;
 import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
 import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
 import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
+import java.math.BigDecimal;
 
 import static com.arturk.fooddelivery.order.constants.OrderEventTypes.ORDER_CREATED_EVENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +45,8 @@ class OrderServiceIntegrationTest extends AbstractIntegrationTest {
         outboxEventRepository.deleteAll();
         orderRepository.deleteAll();
 
-        when(catalogValidationClient.isOrderValid(any(UUID.class), anyList())).thenReturn(true);
+        when(catalogValidationClient.validateOrder(any(UUID.class), anyList()))
+                .thenReturn(new CatalogOrderValidationResult(true, new BigDecimal("125.50")));
 
         MDC.put(CorrelationIdConstants.MDC_KEY, UUID.randomUUID().toString());
     }
@@ -74,6 +77,7 @@ class OrderServiceIntegrationTest extends AbstractIntegrationTest {
         assertThat(savedOrder.getCustomerId()).isEqualTo(customerId);
         assertThat(savedOrder.getRestaurantId()).isEqualTo(restaurantId);
         assertThat(savedOrder.getStatus()).isEqualTo(OrderStatus.PENDING_PAYMENT);
+        assertThat(savedOrder.getTotalAmount()).isEqualByComparingTo("125.50");
         assertThat(savedOrder.getItems())
                 .hasSize(1)
                 .first()
@@ -97,8 +101,16 @@ class OrderServiceIntegrationTest extends AbstractIntegrationTest {
     void shouldFindCustomerOrdersNewestFirst() {
         //given
         UUID customerId = UUID.randomUUID();
-        CustomerOrderEntity firstOrder = orderRepository.save(new CustomerOrderEntity(customerId, UUID.randomUUID()));
-        CustomerOrderEntity secondOrder = orderRepository.save(new CustomerOrderEntity(customerId, UUID.randomUUID()));
+        CustomerOrderEntity firstOrder = orderRepository.save(new CustomerOrderEntity(
+                customerId,
+                UUID.randomUUID(),
+                new BigDecimal("100.00")
+        ));
+        CustomerOrderEntity secondOrder = orderRepository.save(new CustomerOrderEntity(
+                customerId,
+                UUID.randomUUID(),
+                new BigDecimal("200.00")
+        ));
 
         //when
         List<OrderResponse> customerOrders = orderService.getCustomerOrders(customerId, Pageable.unpaged());

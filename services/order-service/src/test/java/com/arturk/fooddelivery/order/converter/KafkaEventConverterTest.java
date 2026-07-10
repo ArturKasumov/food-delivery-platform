@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.math.BigDecimal;
 
 import static com.arturk.fooddelivery.order.constants.OrderEventTypes.ORDER_AGGREGATE_TYPE;
 import static com.arturk.fooddelivery.order.constants.OrderEventTypes.ORDER_CREATED_EVENT_TYPE;
@@ -45,6 +46,7 @@ class KafkaEventConverterTest {
                 customerId,
                 restaurantId,
                 OrderStatus.PENDING_PAYMENT,
+                new BigDecimal("250.00"),
                 List.of(
                         new OrderItemCreatedEventPayload(
                                 menuItemId,
@@ -70,6 +72,7 @@ class KafkaEventConverterTest {
         assertThat(result.getPayload().getCustomerId()).isEqualTo(customerId.toString());
         assertThat(result.getPayload().getRestaurantId()).isEqualTo(restaurantId.toString());
         assertThat(result.getPayload().getStatus().name()).isEqualTo(OrderStatus.PENDING_PAYMENT.name());
+        assertThat(result.getPayload().getTotalAmount()).isEqualTo("250.00");
 
         assertThat(result.getPayload().getItems()).hasSize(1);
 

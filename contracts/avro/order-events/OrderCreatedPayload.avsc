@@ -35,6 +35,11 @@
       "doc": "Order status at the moment the event was produced."
     },
     {
+      "name": "totalAmount",
+      "type": "string",
+      "doc": "Immutable order total in UAH represented as decimal text."
+    },
+    {
       "name": "items",
       "type": {
         "type": "array",

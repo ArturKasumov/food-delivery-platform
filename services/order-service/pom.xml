@@ -293,6 +293,7 @@
                 <version>${avro.version}</version>
                 <executions>
                     <execution>
+                        <id>order-events</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>schema</goal>

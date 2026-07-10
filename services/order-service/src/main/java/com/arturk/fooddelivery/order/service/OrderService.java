@@ -1,14 +1,14 @@
 package com.arturk.fooddelivery.order.service;
 
-import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
-import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
-import com.arturk.fooddelivery.order.service.grpc.client.CatalogValidationClient;
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
+import com.arturk.fooddelivery.order.dto.CatalogOrderValidationResult;
 import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
+import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
 import com.arturk.fooddelivery.order.dto.OrderResponse;
 import com.arturk.fooddelivery.order.exception.business.CatalogValidationException;
 import com.arturk.fooddelivery.order.exception.business.OrderNotFoundException;
 import com.arturk.fooddelivery.order.repository.CustomerOrderRepository;
+import com.arturk.fooddelivery.order.service.grpc.client.CatalogValidationClient;
 import com.arturk.fooddelivery.order.service.outbox.OutboxService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +31,9 @@ public class OrderService {
     @Transactional
     public OrderCreatedResponse createOrder(CreateOrderRequest request) {
         log.info("Creating order for customer {}", request.customerId());
-        validateOrder(request);
+        CatalogOrderValidationResult validationResult = validateOrder(request);
 
-        CustomerOrderEntity order = new CustomerOrderEntity(request.customerId(), request.restaurantId());
+        CustomerOrderEntity order = new CustomerOrderEntity(request.customerId(), request.restaurantId(), validationResult.totalAmount());
         request.items().forEach(item -> order.addItem(item.menuItemId(), item.quantity()));
 
         CustomerOrderEntity savedOrder = orderRepository.save(order);
@@ -58,20 +58,20 @@ public class OrderService {
     }
 
     private CustomerOrderEntity getOrderById(UUID orderId) {
-        return orderRepository.findById(orderId)
+        return orderRepository.findOrderWithItemsById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
     }
 
-    private void validateOrder(CreateOrderRequest request) {
-        boolean isOrderValid = catalogValidationClient.isOrderValid(
+    private CatalogOrderValidationResult validateOrder(CreateOrderRequest request) {
+        CatalogOrderValidationResult validationResult = catalogValidationClient.validateOrder(
                 request.restaurantId(),
-                request.items().stream()
-                        .map(CreateOrderItemRequest::menuItemId)
-                        .toList()
+                request.items()
         );
 
-        if (!isOrderValid) {
+        if (!validationResult.valid()) {
             throw new CatalogValidationException();
         }
+
+        return validationResult;
     }
 }

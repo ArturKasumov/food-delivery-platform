@@ -25,6 +25,7 @@ public class KafkaEventConverter {
                         .setCustomerId(payload.customerId().toString())
                         .setRestaurantId(payload.restaurantId().toString())
                         .setStatus(com.arturk.fooddelivery.contracts.avro.order.v1.OrderStatus.valueOf(payload.status().name()))
+                        .setTotalAmount(payload.totalAmount().toPlainString())
                         .setItems(payload.items().stream()
                                 .map(item -> OrderCreatedItem.newBuilder()
                                         .setMenuItemId(item.menuItemId().toString())

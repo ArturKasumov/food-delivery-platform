@@ -1,6 +1,8 @@
 package com.arturk.fooddelivery.catalog.service.grpc;
 
 import com.arturk.fooddelivery.catalog.service.validation.CatalogValidationService;
+import com.arturk.fooddelivery.catalog.dto.grpc.OrderItemValidationRequest;
+import com.arturk.fooddelivery.catalog.dto.grpc.OrderValidationResult;
 import com.arturk.fooddelivery.contracts.catalog.v1.CatalogValidationServiceGrpc;
 import com.arturk.fooddelivery.contracts.catalog.v1.ValidateOrderRequest;
 import com.arturk.fooddelivery.contracts.catalog.v1.ValidateOrderResponse;
@@ -18,20 +20,23 @@ public class CatalogValidationGrpcService extends CatalogValidationServiceGrpc.C
     private final CatalogValidationService catalogValidationService;
 
     @Override
-    public void isOrderValid(
-            ValidateOrderRequest request,
-            StreamObserver<ValidateOrderResponse> responseObserver
-    ) {
+    public void validateOrder(ValidateOrderRequest request,
+                              StreamObserver<ValidateOrderResponse> responseObserver)
+    {
 
         UUID restaurantId = UUID.fromString(request.getRestaurantId());
-        List<UUID> menuItemIds = request.getMenuItemIdsList()
+        List<OrderItemValidationRequest> orderItems = request.getOrderItemsList()
                 .stream()
-                .map(UUID::fromString)
+                .map(item ->
+                        new OrderItemValidationRequest(UUID.fromString(item.getMenuItemId()), item.getQuantity()))
                 .toList();
 
-        boolean isValid = catalogValidationService.isOrderValid(restaurantId, menuItemIds);
+        OrderValidationResult result = catalogValidationService.validateOrder(restaurantId, orderItems);
 
-        responseObserver.onNext(ValidateOrderResponse.newBuilder().setValid(isValid).build());
+        responseObserver.onNext(ValidateOrderResponse.newBuilder()
+                .setValid(result.valid())
+                .setTotalAmount(result.totalAmount().toPlainString())
+                .build());
         responseObserver.onCompleted();
     }
 }

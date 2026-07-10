@@ -1,9 +1,9 @@
 package com.arturk.fooddelivery.order.domain;
 
 import com.arturk.fooddelivery.order.enums.OrderStatus;
-import com.arturk.fooddelivery.order.enums.OutboxEventStatus;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,11 +16,12 @@ class OrderEntityTest {
         UUID restaurantId = UUID.randomUUID();
         UUID menuItemId = UUID.randomUUID();
 
-        CustomerOrderEntity order = new CustomerOrderEntity(customerId, restaurantId);
+        CustomerOrderEntity order = new CustomerOrderEntity(customerId, restaurantId, new BigDecimal("75.00"));
         order.addItem(menuItemId, 3);
 
         assertThat(order.getId()).isNotNull();
         assertThat(order.getStatus()).isEqualTo(OrderStatus.PENDING_PAYMENT);
+        assertThat(order.getTotalAmount()).isEqualByComparingTo("75.00");
         assertThat(order.getItems())
                 .hasSize(1)
                 .first()

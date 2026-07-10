@@ -1,6 +1,7 @@
 package com.arturk.fooddelivery.order.service;
 
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
+import com.arturk.fooddelivery.order.dto.CatalogOrderValidationResult;
 import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
 import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
 import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -55,7 +57,8 @@ class OrderServiceTest {
                 List.of(new CreateOrderItemRequest(menuItemId, 2))
         );
 
-        when(catalogValidationClient.isOrderValid(restaurantId, List.of(menuItemId))).thenReturn(true);
+        when(catalogValidationClient.validateOrder(restaurantId, request.items()))
+                .thenReturn(new CatalogOrderValidationResult(true, new BigDecimal("250.00")));
         when(orderRepository.save(any(CustomerOrderEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         //when
@@ -70,6 +73,7 @@ class OrderServiceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo(savedOrder.getId());
+        assertThat(response.totalAmount()).isEqualByComparingTo("250.00");
     }
 
     @Test
@@ -84,7 +88,8 @@ class OrderServiceTest {
                 List.of(new CreateOrderItemRequest(menuItemId, 1))
         );
 
-        when(catalogValidationClient.isOrderValid(restaurantId, List.of(menuItemId))).thenReturn(false);
+        when(catalogValidationClient.validateOrder(restaurantId, request.items()))
+                .thenReturn(new CatalogOrderValidationResult(false, BigDecimal.ZERO));
 
         //when
         assertThatThrownBy(() -> orderService.createOrder(request))
@@ -98,7 +103,7 @@ class OrderServiceTest {
     @Test
     void getOrderThrowsWhenOrderDoesNotExist() {
         UUID orderId = UUID.randomUUID();
-        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+        when(orderRepository.findOrderWithItemsById(orderId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> orderService.getOrder(orderId))
                 .isInstanceOf(OrderNotFoundException.class);
@@ -109,7 +114,7 @@ class OrderServiceTest {
         //given
         UUID customerId = UUID.randomUUID();
 
-        CustomerOrderEntity order = new CustomerOrderEntity(customerId, UUID.randomUUID());
+        CustomerOrderEntity order = new CustomerOrderEntity(customerId, UUID.randomUUID(), new BigDecimal("100.00"));
         order.addItem(UUID.randomUUID(), 1);
 
         when(orderRepository.findAllByCustomerIdOrderByCreatedAtDesc(customerId, Pageable.unpaged()))

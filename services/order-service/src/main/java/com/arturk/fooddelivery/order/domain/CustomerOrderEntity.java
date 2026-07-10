@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,9 @@ public class CustomerOrderEntity {
     @Column(nullable = false)
     private OrderStatus status;
 
+    @Column(name = "total_amount", nullable = false, precision = 12, scale = 2)
+    private BigDecimal totalAmount;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItemEntity> items = new ArrayList<>();
 
@@ -46,11 +50,12 @@ public class CustomerOrderEntity {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public CustomerOrderEntity(UUID customerId, UUID restaurantId) {
+    public CustomerOrderEntity(UUID customerId, UUID restaurantId, BigDecimal totalAmount) {
         this.id = UUID.randomUUID();
         this.customerId = customerId;
         this.restaurantId = restaurantId;
         this.status = OrderStatus.PENDING_PAYMENT;
+        this.totalAmount = totalAmount;
     }
 
     public void addItem(UUID menuItemId, int quantity) {

@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -56,7 +57,8 @@ class OrderControllerTest {
         );
 
         when(orderService.createOrder(any(CreateOrderRequest.class))).thenReturn(new OrderCreatedResponse(
-                orderId
+                orderId,
+                new BigDecimal("120.00")
         ));
 
         //when //then
@@ -65,7 +67,8 @@ class OrderControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("X-Correlation-Id"))
-                .andExpect(jsonPath("$.id").value(orderId.toString()));
+                .andExpect(jsonPath("$.id").value(orderId.toString()))
+                .andExpect(jsonPath("$.totalAmount").value(120.00));
     }
 
     @Test
@@ -136,6 +139,7 @@ class OrderControllerTest {
                 customerId,
                 restaurantId,
                 OrderStatus.PENDING_PAYMENT,
+                new BigDecimal("99.50"),
                 List.of(new OrderItemResponse(UUID.randomUUID(), menuItemId, 1)),
                 LocalDateTime.now(),
                 LocalDateTime.now()
@@ -149,6 +153,7 @@ class OrderControllerTest {
                 .andExpect(jsonPath("$.customerId").value(customerId.toString()))
                 .andExpect(jsonPath("$.restaurantId").value(restaurantId.toString()))
                 .andExpect(jsonPath("$.status").value(OrderStatus.PENDING_PAYMENT.name()))
+                .andExpect(jsonPath("$.totalAmount").value(99.50))
                 .andExpect(jsonPath("$.items[0].menuItemId").value(menuItemId.toString()))
                 .andExpect(jsonPath("$.items[0].quantity").value(1));
     }
@@ -178,6 +183,7 @@ class OrderControllerTest {
                 customerId,
                 UUID.randomUUID(),
                 OrderStatus.PENDING_PAYMENT,
+                new BigDecimal("45.00"),
                 List.of(),
                 LocalDateTime.now(),
                 LocalDateTime.now()

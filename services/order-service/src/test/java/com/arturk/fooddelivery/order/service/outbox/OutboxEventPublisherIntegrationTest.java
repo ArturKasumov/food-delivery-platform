@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
@@ -63,6 +64,7 @@ class OutboxEventPublisherIntegrationTest extends AbstractIntegrationTest {
                         customerId,
                         restaurantId,
                         OrderStatus.PENDING_PAYMENT,
+                        new BigDecimal("220.00"),
                         List.of(new OrderItemCreatedEventPayload(menuItemId, 2))
                 ))
         ));
@@ -92,6 +94,7 @@ class OutboxEventPublisherIntegrationTest extends AbstractIntegrationTest {
             assertThat(orderCreatedEvent.getPayload().getCustomerId()).isEqualTo(customerId.toString());
             assertThat(orderCreatedEvent.getPayload().getRestaurantId()).isEqualTo(restaurantId.toString());
             assertThat(orderCreatedEvent.getPayload().getStatus().name()).isEqualTo(OrderStatus.PENDING_PAYMENT.name());
+            assertThat(orderCreatedEvent.getPayload().getTotalAmount()).isEqualTo("220.00");
             assertThat(orderCreatedEvent.getPayload().getItems())
                     .hasSize(1)
                     .first()

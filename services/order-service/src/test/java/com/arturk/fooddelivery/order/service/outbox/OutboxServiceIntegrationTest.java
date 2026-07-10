@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -267,7 +268,7 @@ class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
     }
 
     private CustomerOrderEntity createCustomerOrderEntity() {
-        return new CustomerOrderEntity(UUID.randomUUID(), UUID.randomUUID());
+        return new CustomerOrderEntity(UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("150.00"));
     }
 
     private OutboxEventEntity createOutboxEvent(OutboxEventStatus status) {
