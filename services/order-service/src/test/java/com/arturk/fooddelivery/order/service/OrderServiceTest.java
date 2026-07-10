@@ -1,11 +1,7 @@
 package com.arturk.fooddelivery.order.service;
 
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
-import com.arturk.fooddelivery.order.dto.CatalogOrderValidationResult;
-import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
-import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
-import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
-import com.arturk.fooddelivery.order.dto.OrderResponse;
+import com.arturk.fooddelivery.order.dto.*;
 import com.arturk.fooddelivery.order.exception.business.CatalogValidationException;
 import com.arturk.fooddelivery.order.exception.business.OrderNotFoundException;
 import com.arturk.fooddelivery.order.repository.CustomerOrderRepository;
@@ -19,10 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -73,7 +69,6 @@ class OrderServiceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo(savedOrder.getId());
-        assertThat(response.totalAmount()).isEqualByComparingTo("250.00");
     }
 
     @Test

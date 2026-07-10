@@ -57,8 +57,7 @@ class OrderControllerTest {
         );
 
         when(orderService.createOrder(any(CreateOrderRequest.class))).thenReturn(new OrderCreatedResponse(
-                orderId,
-                new BigDecimal("120.00")
+                orderId
         ));
 
         //when //then
