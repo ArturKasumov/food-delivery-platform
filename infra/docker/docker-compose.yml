@@ -40,6 +40,25 @@ services:
       retries: 5
       start_period: 20s
 
+  payment-postgres:
+    image: postgres:16-alpine
+    container_name: payment-postgres-db
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: payment_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pwd
+    volumes:
+      - payment_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d payment_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
   # KAFKA
 
   kafka:
@@ -85,6 +104,7 @@ services:
 
       echo 'Creating Kafka topics'
       kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic dev.orders.events --replication-factor 1 --partitions 3
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic dev.payments.events --replication-factor 1 --partitions 3
 
       echo 'Successfully created Kafka topics:'
       kafka-topics --bootstrap-server kafka:29092 --list
@@ -148,6 +168,7 @@ services:
       - ../../services/api-gateway/logs:/var/log/apps/api-gateway:ro
       - ../../services/catalog-service/logs:/var/log/apps/catalog-service:ro
       - ../../services/order-service/logs:/var/log/apps/order-service:ro
+      - ../../services/payment-service/logs:/var/log/apps/payment-service:ro
       - alloy_data:/var/lib/alloy/data
     command:
       - run
@@ -181,6 +202,7 @@ services:
       API_GATEWAY_METRICS_TARGET: ${API_GATEWAY_METRICS_TARGET:-host.docker.internal:8080}
       CATALOG_SERVICE_METRICS_TARGET: ${CATALOG_SERVICE_METRICS_TARGET:-host.docker.internal:8081}
       ORDER_SERVICE_METRICS_TARGET: ${ORDER_SERVICE_METRICS_TARGET:-host.docker.internal:8082}
+      PAYMENT_SERVICE_METRICS_TARGET: ${PAYMENT_SERVICE_METRICS_TARGET:-host.docker.internal:8083}
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml.template:ro
       - prometheus_data:/prometheus
@@ -193,6 +215,7 @@ services:
           -e "s|__API_GATEWAY_METRICS_TARGET__|$${API_GATEWAY_METRICS_TARGET}|g" \
           -e "s|__CATALOG_SERVICE_METRICS_TARGET__|$${CATALOG_SERVICE_METRICS_TARGET}|g" \
           -e "s|__ORDER_SERVICE_METRICS_TARGET__|$${ORDER_SERVICE_METRICS_TARGET}|g" \
+          -e "s|__PAYMENT_SERVICE_METRICS_TARGET__|$${PAYMENT_SERVICE_METRICS_TARGET}|g" \
           /etc/prometheus/prometheus.yml.template > /tmp/prometheus.yml
         exec /bin/prometheus \
           --config.file=/tmp/prometheus.yml \
@@ -226,6 +249,7 @@ services:
 volumes:
   catalog_postgres_data:
   order_postgres_data:
+  payment_postgres_data:
   prometheus_data:
   grafana_data:
   loki_data:

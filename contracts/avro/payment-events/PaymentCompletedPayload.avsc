@@ -1,0 +1,29 @@
+{
+  "type": "record",
+  "name": "PaymentCompletedPayload",
+  "namespace": "com.arturk.fooddelivery.contracts.avro.payment.v1",
+  "doc": "Payload published when a payment is authorized successfully.",
+  "fields": [
+    {
+      "name": "paymentId",
+      "type": "string"
+    },
+    {
+      "name": "orderId",
+      "type": "string"
+    },
+    {
+      "name": "customerId",
+      "type": "string"
+    },
+    {
+      "name": "amount",
+      "type": "string",
+      "doc": "Payment amount in UAH represented as decimal text."
+    },
+    {
+      "name": "status",
+      "type": "string"
+    }
+  ]
+}

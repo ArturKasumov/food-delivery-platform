@@ -29,3 +29,12 @@ scrape_configs:
         labels:
           service: order-service
           environment: __APP_ENV__
+
+  - job_name: payment-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - __PAYMENT_SERVICE_METRICS_TARGET__
+        labels:
+          service: payment-service
+          environment: __APP_ENV__

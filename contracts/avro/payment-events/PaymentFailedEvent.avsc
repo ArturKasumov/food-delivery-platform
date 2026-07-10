@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "PaymentFailedEvent",
+  "namespace": "com.arturk.fooddelivery.contracts.avro.payment.v1",
+  "doc": "Published by payment-service when payment authorization fails.",
+  "fields": [
+    {
+      "name": "metadata",
+      "type": "com.arturk.fooddelivery.contracts.avro.common.v1.EventMetadata"
+    },
+    {
+      "name": "payload",
+      "type": "com.arturk.fooddelivery.contracts.avro.payment.v1.PaymentFailedPayload"
+    }
+  ]
+}

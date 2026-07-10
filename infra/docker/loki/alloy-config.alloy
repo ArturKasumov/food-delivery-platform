@@ -22,6 +22,12 @@ local.file_match "spring_boot_logs" {
       "environment"  = env("APP_ENV"),
       "instance"     = "order-service",
     },
+    {
+      "__path__"    = "/var/log/apps/payment-service/*.json",
+      "service_name" = "payment-service",
+      "environment"  = env("APP_ENV"),
+      "instance"     = "payment-service",
+    },
   ]
   sync_period = "5s"
 }

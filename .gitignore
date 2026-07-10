@@ -29,6 +29,7 @@ replay_pid*
 services/catalog-service/target
 services/api-gateway/target
 services/order-service/target
+services/payment-service/target
 
 app/node_modules
 app/dist
