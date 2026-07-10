@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.catalog.service.grpc;
 
-import com.arturk.fooddelivery.catalog.service.validation.CatalogValidationService;
+import com.arturk.fooddelivery.catalog.service.CatalogValidationService;
 import com.arturk.fooddelivery.catalog.dto.grpc.OrderItemValidationRequest;
 import com.arturk.fooddelivery.catalog.dto.grpc.OrderValidationResult;
 import com.arturk.fooddelivery.contracts.catalog.v1.CatalogValidationServiceGrpc;

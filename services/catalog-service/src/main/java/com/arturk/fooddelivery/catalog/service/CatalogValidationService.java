@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.catalog.service.validation;
+package com.arturk.fooddelivery.catalog.service;
 
 import com.arturk.fooddelivery.catalog.dto.grpc.OrderItemValidationRequest;
 import com.arturk.fooddelivery.catalog.domain.MenuItemEntity;

@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.order.dto;
+package com.arturk.fooddelivery.order.dto.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

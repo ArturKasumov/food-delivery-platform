@@ -6,7 +6,7 @@ import com.arturk.fooddelivery.order.cucumber.data.CustomerOrderData;
 import com.arturk.fooddelivery.order.cucumber.data.OrderItemData;
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
 import com.arturk.fooddelivery.order.domain.OrderItemEntity;
-import com.arturk.fooddelivery.order.dto.OrderResponse;
+import com.arturk.fooddelivery.order.dto.response.OrderResponse;
 import com.arturk.fooddelivery.order.enums.OutboxEventStatus;
 import com.arturk.fooddelivery.order.exception.business.OrderNotFoundException;
 import com.arturk.fooddelivery.order.repository.CustomerOrderRepository;

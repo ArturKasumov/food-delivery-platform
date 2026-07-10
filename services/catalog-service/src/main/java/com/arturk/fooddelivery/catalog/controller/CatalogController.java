@@ -1,9 +1,9 @@
 package com.arturk.fooddelivery.catalog.controller;
 
-import com.arturk.fooddelivery.catalog.dto.CreateMenuItemRequest;
-import com.arturk.fooddelivery.catalog.dto.CreateRestaurantRequest;
-import com.arturk.fooddelivery.catalog.dto.MenuItemResponse;
-import com.arturk.fooddelivery.catalog.dto.RestaurantResponse;
+import com.arturk.fooddelivery.catalog.dto.request.CreateMenuItemRequest;
+import com.arturk.fooddelivery.catalog.dto.request.CreateRestaurantRequest;
+import com.arturk.fooddelivery.catalog.dto.response.MenuItemResponse;
+import com.arturk.fooddelivery.catalog.dto.response.RestaurantResponse;
 import com.arturk.fooddelivery.catalog.service.CatalogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

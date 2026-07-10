@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.order.exception.technical;
 
-public class CatalogServiceUnavailableException extends TechnicalMarketAppException {
+public class CatalogServiceUnavailableException extends TechnicalOrderAppException {
 
     private static final String CODE = "ORDER-MS-04-ERROR";
 

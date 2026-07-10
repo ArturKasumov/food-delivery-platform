@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.order.cucumber.context;
 
-import com.arturk.fooddelivery.order.dto.OrderResponse;
+import com.arturk.fooddelivery.order.dto.response.OrderResponse;
 import io.cucumber.spring.ScenarioScope;
 import lombok.Getter;
 import lombok.Setter;

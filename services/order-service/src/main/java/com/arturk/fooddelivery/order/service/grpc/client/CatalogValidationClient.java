@@ -5,7 +5,7 @@ import com.arturk.fooddelivery.contracts.catalog.v1.OrderItem;
 import com.arturk.fooddelivery.contracts.catalog.v1.ValidateOrderRequest;
 import com.arturk.fooddelivery.contracts.catalog.v1.ValidateOrderResponse;
 import com.arturk.fooddelivery.order.dto.CatalogOrderValidationResult;
-import com.arturk.fooddelivery.order.dto.CreateOrderItemRequest;
+import com.arturk.fooddelivery.order.dto.request.CreateOrderItemRequest;
 import com.arturk.fooddelivery.order.exception.technical.CatalogServiceUnavailableException;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;

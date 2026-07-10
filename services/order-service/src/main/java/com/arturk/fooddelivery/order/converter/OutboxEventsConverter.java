@@ -1,8 +1,8 @@
 package com.arturk.fooddelivery.order.converter;
 
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
-import com.arturk.fooddelivery.order.messaging.outbox.OrderCreatedEventPayload;
-import com.arturk.fooddelivery.order.messaging.outbox.OrderItemCreatedEventPayload;
+import com.arturk.fooddelivery.order.dto.OrderCreatedEventPayload;
+import com.arturk.fooddelivery.order.dto.OrderItemCreatedEventPayload;
 import org.springframework.stereotype.Component;
 
 @Component

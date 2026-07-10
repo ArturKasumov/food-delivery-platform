@@ -1,8 +1,8 @@
 package com.arturk.fooddelivery.order.controller;
 
-import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
-import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
-import com.arturk.fooddelivery.order.dto.OrderResponse;
+import com.arturk.fooddelivery.order.dto.request.CreateOrderRequest;
+import com.arturk.fooddelivery.order.dto.response.OrderCreatedResponse;
+import com.arturk.fooddelivery.order.dto.response.OrderResponse;
 import com.arturk.fooddelivery.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

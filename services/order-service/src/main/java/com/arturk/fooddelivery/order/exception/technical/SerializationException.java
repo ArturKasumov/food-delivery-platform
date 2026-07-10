@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.order.exception.technical;
 
-public class SerializationException extends TechnicalMarketAppException {
+public class SerializationException extends TechnicalOrderAppException {
 
     private static final String CODE = "ORDER-MS-05-ERROR";
 

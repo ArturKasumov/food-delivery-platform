@@ -4,8 +4,8 @@ import com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedEvent;
 import com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedItem;
 import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
 import com.arturk.fooddelivery.order.enums.OrderStatus;
-import com.arturk.fooddelivery.order.messaging.outbox.OrderCreatedEventPayload;
-import com.arturk.fooddelivery.order.messaging.outbox.OrderItemCreatedEventPayload;
+import com.arturk.fooddelivery.order.dto.OrderCreatedEventPayload;
+import com.arturk.fooddelivery.order.dto.OrderItemCreatedEventPayload;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

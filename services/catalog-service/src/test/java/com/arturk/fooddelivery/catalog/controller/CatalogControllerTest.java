@@ -1,6 +1,6 @@
 package com.arturk.fooddelivery.catalog.controller;
 
-import com.arturk.fooddelivery.catalog.dto.RestaurantResponse;
+import com.arturk.fooddelivery.catalog.dto.response.RestaurantResponse;
 import com.arturk.fooddelivery.catalog.enums.RestaurantStatus;
 import com.arturk.fooddelivery.catalog.service.CatalogService;
 import lombok.SneakyThrows;

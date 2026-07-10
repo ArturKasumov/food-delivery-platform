@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.order.dto;
+package com.arturk.fooddelivery.order.dto.response;
 
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
 

@@ -2,8 +2,8 @@ package com.arturk.fooddelivery.order.converter;
 
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
 import com.arturk.fooddelivery.order.enums.OrderStatus;
-import com.arturk.fooddelivery.order.messaging.outbox.OrderCreatedEventPayload;
-import com.arturk.fooddelivery.order.messaging.outbox.OrderItemCreatedEventPayload;
+import com.arturk.fooddelivery.order.dto.OrderCreatedEventPayload;
+import com.arturk.fooddelivery.order.dto.OrderItemCreatedEventPayload;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

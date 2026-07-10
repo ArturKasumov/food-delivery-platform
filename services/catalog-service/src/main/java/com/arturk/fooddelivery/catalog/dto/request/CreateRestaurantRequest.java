@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.catalog.dto;
+package com.arturk.fooddelivery.catalog.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

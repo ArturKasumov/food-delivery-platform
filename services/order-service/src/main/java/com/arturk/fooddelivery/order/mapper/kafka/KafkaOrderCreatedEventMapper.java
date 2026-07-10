@@ -4,7 +4,7 @@ import com.arturk.fooddelivery.order.constants.OrderEventTypes;
 import com.arturk.fooddelivery.order.converter.JsonConverter;
 import com.arturk.fooddelivery.order.converter.KafkaEventConverter;
 import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
-import com.arturk.fooddelivery.order.messaging.outbox.OrderCreatedEventPayload;
+import com.arturk.fooddelivery.order.dto.OrderCreatedEventPayload;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,7 @@
 package com.arturk.fooddelivery.order.exception;
 
 import com.arturk.fooddelivery.order.exception.business.BusinessOrderAppException;
-import com.arturk.fooddelivery.order.exception.technical.TechnicalMarketAppException;
+import com.arturk.fooddelivery.order.exception.technical.TechnicalOrderAppException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -29,8 +29,8 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(TechnicalMarketAppException.class)
-    public ResponseEntity<ErrorResponse> handleException(TechnicalMarketAppException exception) {
+    @ExceptionHandler(TechnicalOrderAppException.class)
+    public ResponseEntity<ErrorResponse> handleException(TechnicalOrderAppException exception) {
         log.error("Technical error occurred", exception);
         ErrorResponse errorResponse = new ErrorResponse(exception.getCode(), exception.getDescription(), exception.getDetails());
         return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));

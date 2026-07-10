@@ -1,8 +1,9 @@
-package com.arturk.fooddelivery.order.service.outbox;
+package com.arturk.fooddelivery.order.service.scheduler;
 
 import com.arturk.fooddelivery.order.constants.CorrelationIdConstants;
 import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
 import com.arturk.fooddelivery.order.mapper.kafka.KafkaEventMapperRegistry;
+import com.arturk.fooddelivery.order.service.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -56,17 +57,17 @@ public class OutboxEventPublisher {
 
                 kafkaTemplate.send(record).get();
                 outboxService.markPublished(event);
-                log.info("Published outbox event {} to topic {}", event.getId(), event.getTopic());
+                log.info("Published outbox event: {} to topic: {}", event.getId(), event.getTopic());
 
             } catch (InterruptedException exception) {
                 Thread.currentThread().interrupt();
 
                 outboxService.markFailed(event, exception.getMessage());
-                log.warn("Publishing outbox event {} was interrupted, mark as failed", event.getId(), exception);
+                log.warn("Publishing outbox event: {} was interrupted, mark as failed", event.getId(), exception);
 
             } catch (Exception exception) {
                 outboxService.markFailed(event, exception.getMessage());
-                log.warn("Failed to publish outbox event {}", event.getId(), exception);
+                log.warn("Failed to publish outbox event: {}", event.getId(), exception);
             }
         }
     }

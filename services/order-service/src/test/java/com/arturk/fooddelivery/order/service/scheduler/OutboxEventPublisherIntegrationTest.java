@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.order.service.outbox;
+package com.arturk.fooddelivery.order.service.scheduler;
 
 import com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedEvent;
 import com.arturk.fooddelivery.order.AbstractIntegrationTest;
@@ -7,8 +7,8 @@ import com.arturk.fooddelivery.order.converter.JsonConverter;
 import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
 import com.arturk.fooddelivery.order.enums.OrderStatus;
 import com.arturk.fooddelivery.order.enums.OutboxEventStatus;
-import com.arturk.fooddelivery.order.messaging.outbox.OrderCreatedEventPayload;
-import com.arturk.fooddelivery.order.messaging.outbox.OrderItemCreatedEventPayload;
+import com.arturk.fooddelivery.order.dto.OrderCreatedEventPayload;
+import com.arturk.fooddelivery.order.dto.OrderItemCreatedEventPayload;
 import com.arturk.fooddelivery.order.repository.OutboxEventRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;

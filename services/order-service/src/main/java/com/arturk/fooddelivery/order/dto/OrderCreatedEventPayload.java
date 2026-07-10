@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.order.messaging.outbox;
+package com.arturk.fooddelivery.order.dto;
 
 import com.arturk.fooddelivery.order.enums.OrderStatus;
 

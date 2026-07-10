@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.catalog.dto;
+package com.arturk.fooddelivery.catalog.dto.response;
 
 import com.arturk.fooddelivery.catalog.domain.RestaurantEntity;
 import com.arturk.fooddelivery.catalog.enums.RestaurantStatus;

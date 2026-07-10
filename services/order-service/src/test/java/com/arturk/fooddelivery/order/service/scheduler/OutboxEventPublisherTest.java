@@ -1,8 +1,9 @@
-package com.arturk.fooddelivery.order.service.outbox;
+package com.arturk.fooddelivery.order.service.scheduler;
 
 import com.arturk.fooddelivery.order.domain.OutboxEventEntity;
 import com.arturk.fooddelivery.order.mapper.kafka.KafkaEventMapperRegistry;
 import com.arturk.fooddelivery.order.mapper.kafka.KafkaOrderCreatedEventMapper;
+import com.arturk.fooddelivery.order.service.outbox.OutboxService;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -2,9 +2,9 @@ package com.arturk.fooddelivery.order.service;
 
 import com.arturk.fooddelivery.order.domain.CustomerOrderEntity;
 import com.arturk.fooddelivery.order.dto.CatalogOrderValidationResult;
-import com.arturk.fooddelivery.order.dto.CreateOrderRequest;
-import com.arturk.fooddelivery.order.dto.OrderCreatedResponse;
-import com.arturk.fooddelivery.order.dto.OrderResponse;
+import com.arturk.fooddelivery.order.dto.request.CreateOrderRequest;
+import com.arturk.fooddelivery.order.dto.response.OrderCreatedResponse;
+import com.arturk.fooddelivery.order.dto.response.OrderResponse;
 import com.arturk.fooddelivery.order.exception.business.CatalogValidationException;
 import com.arturk.fooddelivery.order.exception.business.OrderNotFoundException;
 import com.arturk.fooddelivery.order.repository.CustomerOrderRepository;
