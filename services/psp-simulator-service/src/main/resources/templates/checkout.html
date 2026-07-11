@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PSP Checkout</title>
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+</head>
+<body>
+<div class="shell">
+    <main>
+        <section class="summary" aria-label="Payment summary">
+            <div>
+                <div class="brand">
+                    <div class="mark">FD</div>
+                    <span>PSP Simulator</span>
+                </div>
+
+                <div class="merchant">
+                    <p class="eyebrow">Food Delivery Platform</p>
+                    <h1>Confirm your payment</h1>
+                    <p class="amount" th:text="${checkoutSession.amount()} + ' ' + ${checkoutSession.currency()}">250.00 UAH</p>
+                    <p class="hint">This page simulates an external payment provider.</p>
+                </div>
+            </div>
+
+            <div class="secure-strip" aria-label="Payment assurances">
+                <div class="secure-row">
+                    <span class="secure-icon">OK</span>
+                    <span>Local sandbox checkout</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="checkout" aria-label="Checkout details">
+            <div class="status-line">
+                <div>
+                    <p class="status-label">Session status</p>
+                    <p class="status-value" th:text="${checkoutSession.status()}">CREATED</p>
+                </div>
+                <span class="badge" th:text="${checkoutSession.pending} ? 'Awaiting action' : 'Finished'">Awaiting action</span>
+            </div>
+
+            <dl class="details">
+                <div class="detail">
+                    <dt>Session</dt>
+                    <dd th:text="${checkoutSession.id()}">session-id</dd>
+                </div>
+                <div class="detail">
+                    <dt>Order</dt>
+                    <dd th:text="${checkoutSession.orderId()}">order-id</dd>
+                </div>
+                <div class="detail">
+                    <dt>Payment</dt>
+                    <dd th:text="${checkoutSession.paymentId()}">payment-id</dd>
+                </div>
+            </dl>
+
+            <p class="notice">Choose a payment result.</p>
+
+            <div class="actions" th:if="${checkoutSession.pending}">
+                <form th:action="@{/checkout/{sessionId}/pay(sessionId=${checkoutSession.id()})}" method="post">
+                    <button class="pay" type="submit">Pay</button>
+                </form>
+                <form th:action="@{/checkout/{sessionId}/cancel(sessionId=${checkoutSession.id()})}" method="post">
+                    <button class="cancel" type="submit">Cancel</button>
+                </form>
+            </div>
+
+            <p class="status" th:unless="${checkoutSession.pending}">This checkout session is already finished.</p>
+        </section>
+    </main>
+</div>
+</body>
+</html>

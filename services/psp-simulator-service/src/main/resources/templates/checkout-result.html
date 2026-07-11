@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PSP Checkout Result</title>
+    <link rel="stylesheet" th:href="@{/css/checkout-result.css}">
+</head>
+<body>
+<main>
+    <section class="top">
+        <div class="brand">
+            <div class="mark">FD</div>
+            <span>PSP Simulator</span>
+        </div>
+        <h1 th:text="'Checkout ' + ${checkoutSession.status()}">Checkout PAID</h1>
+    </section>
+
+    <section class="body">
+        <div class="result" th:text="${decision}">PAID</div>
+        <p>
+            PSP simulator recorded the selected result for payment
+            <strong th:text="${checkoutSession.paymentId()}">payment-id</strong>.
+        </p>
+        <a th:href="@{/checkout/{sessionId}(sessionId=${checkoutSession.id()})}">Back to checkout</a>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,17 @@
+server:
+  port: ${SERVER_PORT:8084}
+  servlet:
+    context-path: /api/v1/psp-simulator
+
+spring:
+  application:
+    name: psp-simulator-service
+  thymeleaf:
+    cache: false
+
+app:
+  environment: ${APP_ENV:local}
+
+logging:
+  file:
+    path: ${LOG_PATH:services/${spring.application.name}/logs}
