@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.psp.dto;
+package com.arturk.fooddelivery.psp.dto.request;
 
 import jakarta.validation.constraints.*;
 

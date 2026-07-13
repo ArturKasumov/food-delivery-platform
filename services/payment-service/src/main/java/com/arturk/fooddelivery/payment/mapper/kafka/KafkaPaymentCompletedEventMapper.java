@@ -4,7 +4,7 @@ import com.arturk.fooddelivery.payment.constants.PaymentEventTypes;
 import com.arturk.fooddelivery.payment.converter.JsonConverter;
 import com.arturk.fooddelivery.payment.converter.KafkaEventConverter;
 import com.arturk.fooddelivery.payment.domain.OutboxEventEntity;
-import com.arturk.fooddelivery.payment.dto.PaymentCompletedEventPayload;
+import com.arturk.fooddelivery.payment.dto.payload.PaymentCompletedEventPayload;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

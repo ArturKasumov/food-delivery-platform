@@ -27,10 +27,9 @@ Content-Type: application/json
   "orderId": "22222222-2222-2222-2222-222222222222",
   "amount": 250.00,
   "currency": "UAH",
-  "callbackUrl": "https://example.com/payments/callback/psp-simulator"
+  "callbackUrl": "http://localhost:8083/api/v1/payment/callback/psp-simulator"
 }
 ```
 
 The response contains a `checkoutUrl`. Open it in the browser and choose Pay or Cancel.
-
-For now the simulator records the decision and displays the callback URL and status that would be sent to `payment-service`.
+The simulator creates at most one checkout session for each `paymentId` and sends one HMAC-signed callback attempt to the supplied callback URL.

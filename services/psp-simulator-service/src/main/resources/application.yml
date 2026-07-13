@@ -10,6 +10,10 @@ spring:
     cache: false
 
 app:
+  callback:
+    callback-secret: ${PSP_CALLBACK_SECRET:local-psp-callback-secret}
+    connect-timeout: 2s
+    read-timeout: 5s
   environment: ${APP_ENV:local}
 
 logging:

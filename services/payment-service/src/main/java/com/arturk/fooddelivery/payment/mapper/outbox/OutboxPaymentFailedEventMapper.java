@@ -7,7 +7,7 @@ import com.arturk.fooddelivery.payment.converter.JsonConverter;
 import com.arturk.fooddelivery.payment.converter.OutboxEventConverter;
 import com.arturk.fooddelivery.payment.domain.OutboxEventEntity;
 import com.arturk.fooddelivery.payment.domain.PaymentEntity;
-import com.arturk.fooddelivery.payment.dto.PaymentFailedEventPayload;
+import com.arturk.fooddelivery.payment.dto.payload.PaymentFailedEventPayload;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;

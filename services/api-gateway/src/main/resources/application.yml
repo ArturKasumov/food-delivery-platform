@@ -20,6 +20,13 @@ spring:
               filters:
                 - PreserveHostHeader
                 - DedupeResponseHeader=X-Correlation-Id RETAIN_LAST
+            - id: payment-service
+              uri: ${PAYMENT_SERVICE_URL:http://localhost:8083}
+              predicates:
+                - Path=/api/v1/payments,/api/v1/payments/**
+              filters:
+                - PreserveHostHeader
+                - DedupeResponseHeader=X-Correlation-Id RETAIN_LAST
 
 server:
   port: ${SERVER_PORT:8080}

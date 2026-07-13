@@ -1,12 +1,14 @@
 package com.arturk.fooddelivery.payment.service;
 
 import com.arturk.fooddelivery.contracts.avro.order.v1.OrderCreatedEvent;
+import com.arturk.fooddelivery.payment.domain.CheckoutJobEntity;
 import com.arturk.fooddelivery.payment.domain.PaymentEntity;
 import com.arturk.fooddelivery.payment.domain.ProcessedEventEntity;
-import com.arturk.fooddelivery.payment.dto.PaymentAuthorizationResult;
+import com.arturk.fooddelivery.payment.dto.response.PaymentResponse;
+import com.arturk.fooddelivery.payment.exception.business.PaymentNotFoundException;
+import com.arturk.fooddelivery.payment.repository.CheckoutJobRepository;
 import com.arturk.fooddelivery.payment.repository.PaymentRepository;
 import com.arturk.fooddelivery.payment.repository.ProcessedEventRepository;
-import com.arturk.fooddelivery.payment.service.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,8 +24,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final ProcessedEventRepository processedEventRepository;
-    private final PaymentAuthorizationService paymentAuthorizationService;
-    private final OutboxService outboxService;
+    private final CheckoutJobRepository checkoutJobRepository;
 
     @Transactional
     public void processOrderCreatedEvent(OrderCreatedEvent event) {
@@ -35,8 +36,6 @@ public class PaymentService {
         }
 
         UUID orderId = UUID.fromString(event.getPayload().getOrderId());
-        UUID customerId = UUID.fromString(event.getPayload().getCustomerId());
-        BigDecimal amount = new BigDecimal(event.getPayload().getTotalAmount());
 
         if (paymentRepository.findByOrderId(orderId).isPresent()) {
             processedEventRepository.save(new ProcessedEventEntity(eventId, event.getMetadata().getEventType()));
@@ -44,22 +43,28 @@ public class PaymentService {
             return;
         }
 
-        PaymentEntity payment = new PaymentEntity(orderId, customerId, amount);
-        PaymentAuthorizationResult authorizationResult = paymentAuthorizationService.authorize(payment);
+        UUID customerId = UUID.fromString(event.getPayload().getCustomerId());
+        BigDecimal amount = new BigDecimal(event.getPayload().getTotalAmount());
+        String correlationId = event.getMetadata().getCorrelationId();
 
-        if (authorizationResult.isSuccessful()) {
-            payment.complete();
-        } else {
-            payment.fail(authorizationResult.failureReason());
-        }
+        PaymentEntity payment = paymentRepository.save(
+                new PaymentEntity(orderId, customerId, amount)
+        );
 
-        PaymentEntity savedPayment = paymentRepository.save(payment);
-        outboxService.savePaymentResultEvent(savedPayment);
-        processedEventRepository.save(new ProcessedEventEntity(eventId, event.getMetadata().getEventType()));
+        checkoutJobRepository.save(new CheckoutJobEntity(payment.getId(), payment.getOrderId(), payment.getAmount(), correlationId));
 
-        log.info("Processed payment {} for order {} with status {}",
-                savedPayment.getId(),
-                savedPayment.getOrderId(),
-                savedPayment.getStatus());
+        processedEventRepository.save(
+                new ProcessedEventEntity(eventId, event.getMetadata().getEventType())
+        );
+
+        log.info("Initialized payment: {} and checkout job for order: {}",
+                payment.getId(), payment.getOrderId());
+    }
+
+    @Transactional(readOnly = true)
+    public PaymentResponse getPaymentByOrderId(UUID orderId) {
+        return paymentRepository.findByOrderId(orderId)
+                .map(PaymentResponse::from)
+                .orElseThrow(PaymentNotFoundException::new);
     }
 }

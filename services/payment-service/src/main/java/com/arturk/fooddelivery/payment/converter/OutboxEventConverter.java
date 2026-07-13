@@ -1,8 +1,8 @@
 package com.arturk.fooddelivery.payment.converter;
 
 import com.arturk.fooddelivery.payment.domain.PaymentEntity;
-import com.arturk.fooddelivery.payment.dto.PaymentCompletedEventPayload;
-import com.arturk.fooddelivery.payment.dto.PaymentFailedEventPayload;
+import com.arturk.fooddelivery.payment.dto.payload.PaymentCompletedEventPayload;
+import com.arturk.fooddelivery.payment.dto.payload.PaymentFailedEventPayload;
 import org.springframework.stereotype.Component;
 
 @Component

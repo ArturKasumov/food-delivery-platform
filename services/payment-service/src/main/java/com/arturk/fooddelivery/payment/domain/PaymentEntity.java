@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.UUID;
 
 @Entity
@@ -46,6 +47,12 @@ public class PaymentEntity {
     @Column(name = "failure_reason", length = 500)
     private String failureReason;
 
+    @Column(name = "provider_session_id", unique = true)
+    private UUID providerSessionId;
+
+    @Column(name = "checkout_url", length = 1000)
+    private String checkoutUrl;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -62,13 +69,24 @@ public class PaymentEntity {
         this.status = PaymentStatus.PENDING;
     }
 
-    public void complete() {
+    public void applyPaymentCompleted() {
         this.status = PaymentStatus.COMPLETED;
         this.failureReason = null;
     }
 
-    public void fail(String failureReason) {
+    public void applyPaymentFailed(String failureReason) {
         this.status = PaymentStatus.FAILED;
         this.failureReason = failureReason;
+    }
+
+    public void applyCheckoutCreated(UUID providerSessionId, String checkoutUrl) {
+        this.providerSessionId = providerSessionId;
+        this.checkoutUrl = checkoutUrl;
+        this.status = PaymentStatus.AWAITING_CUSTOMER;
+        this.failureReason = null;
+    }
+
+    public boolean isFinalStatus() {
+        return EnumSet.of(PaymentStatus.COMPLETED, PaymentStatus.FAILED).contains(status);
     }
 }

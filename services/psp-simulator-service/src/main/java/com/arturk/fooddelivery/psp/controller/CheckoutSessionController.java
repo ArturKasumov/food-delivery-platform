@@ -1,7 +1,7 @@
 package com.arturk.fooddelivery.psp.controller;
 
-import com.arturk.fooddelivery.psp.dto.CreateCheckoutSessionRequest;
-import com.arturk.fooddelivery.psp.dto.CreateCheckoutSessionResponse;
+import com.arturk.fooddelivery.psp.dto.request.CreateCheckoutSessionRequest;
+import com.arturk.fooddelivery.psp.dto.response.CreateCheckoutSessionResponse;
 import com.arturk.fooddelivery.psp.model.CheckoutSession;
 import com.arturk.fooddelivery.psp.service.CheckoutSessionService;
 import jakarta.validation.Valid;

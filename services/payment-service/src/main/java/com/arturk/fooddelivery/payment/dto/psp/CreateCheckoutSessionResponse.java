@@ -1,4 +1,4 @@
-package com.arturk.fooddelivery.psp.dto;
+package com.arturk.fooddelivery.payment.dto.psp;
 
 import java.util.UUID;
 

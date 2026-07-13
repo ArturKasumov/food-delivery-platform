@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="0.0.2-1" author="arturk">
+        <addColumn tableName="payments">
+            <column name="provider_session_id" type="uuid"/>
+            <column name="checkout_url" type="varchar(1000)"/>
+        </addColumn>
+
+        <addUniqueConstraint
+                tableName="payments"
+                columnNames="provider_session_id"
+                constraintName="uk_payments_provider_session_id"/>
+
+        <rollback>
+            <dropColumn tableName="payments" columnName="provider_session_id"/>
+            <dropColumn tableName="payments" columnName="checkout_url"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0.0.2-2" author="arturk">
+        <createTable tableName="checkout_jobs">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_checkout_jobs"/>
+            </column>
+            <column name="payment_id" type="uuid">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_checkout_jobs_payment_id"/>
+            </column>
+            <column name="order_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="numeric(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="correlation_id" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="checkout_jobs"
+                baseColumnNames="payment_id"
+                referencedTableName="payments"
+                referencedColumnNames="id"
+                constraintName="fk_checkout_jobs_payment"/>
+
+        <createIndex indexName="idx_checkout_jobs_status_created_at" tableName="checkout_jobs">
+            <column name="status"/>
+            <column name="created_at"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="checkout_jobs"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

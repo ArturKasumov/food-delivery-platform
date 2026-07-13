@@ -3,6 +3,7 @@ package com.arturk.fooddelivery.payment.exception;
 import com.arturk.fooddelivery.payment.exception.business.BusinessPaymentAppException;
 import com.arturk.fooddelivery.payment.exception.technical.TechnicalPaymentAppException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.errors.AuthorizationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final String VALIDATION_ERROR_CODE = "ORDER-MS-01-ERROR";
+    private static final String VALIDATION_ERROR_CODE = "PAYMENT-MS-01-ERROR";
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
@@ -44,8 +45,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()));
     }
 
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleException(AuthorizationException exception) {
+        log.error("Business error occurred", exception);
+        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(HttpStatus.UNAUTHORIZED.value()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException exception) {
         String details = exception.getBindingResult().getFieldErrors()
                 .stream()
                 .map(this::formatFieldError)

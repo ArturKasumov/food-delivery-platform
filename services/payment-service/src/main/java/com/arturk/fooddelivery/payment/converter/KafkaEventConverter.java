@@ -4,8 +4,8 @@ import com.arturk.fooddelivery.contracts.avro.common.v1.EventMetadata;
 import com.arturk.fooddelivery.contracts.avro.payment.v1.PaymentCompletedEvent;
 import com.arturk.fooddelivery.contracts.avro.payment.v1.PaymentFailedEvent;
 import com.arturk.fooddelivery.payment.domain.OutboxEventEntity;
-import com.arturk.fooddelivery.payment.dto.PaymentCompletedEventPayload;
-import com.arturk.fooddelivery.payment.dto.PaymentFailedEventPayload;
+import com.arturk.fooddelivery.payment.dto.payload.PaymentCompletedEventPayload;
+import com.arturk.fooddelivery.payment.dto.payload.PaymentFailedEventPayload;
 import org.springframework.stereotype.Component;
 
 @Component

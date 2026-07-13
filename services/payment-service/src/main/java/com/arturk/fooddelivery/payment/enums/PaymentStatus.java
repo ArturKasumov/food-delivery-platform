@@ -7,6 +7,7 @@ import lombok.Getter;
 public enum PaymentStatus {
 
     PENDING(null),
+    AWAITING_CUSTOMER(null),
     COMPLETED(PaymentEventTypes.PAYMENT_COMPLETED_EVENT_TYPE),
     FAILED(PaymentEventTypes.PAYMENT_FAILED_EVENT_TYPE);
 

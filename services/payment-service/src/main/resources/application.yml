@@ -45,6 +45,19 @@ spring:
         max.block.ms: 10000
 
 app:
+  psp:
+    base-url: ${PSP_BASE_URL:http://localhost:8084/api/v1/psp-simulator}
+    callback-url: ${PSP_CALLBACK_URL:http://localhost:8083/api/v1/payment/callback/psp-simulator}
+    callback-secret: ${PSP_CALLBACK_SECRET:local-psp-callback-secret}
+    connect-timeout: 2s
+    read-timeout: 5s
+    callback-timestamp-tolerance: 5m
+  checkout:
+    worker:
+      enabled: ${CHECKOUT_WORKER_ENABLED:true}
+      batch-size: ${CHECKOUT_WORKER_BATCH_SIZE:10}
+      fixed-delay: ${CHECKOUT_WORKER_FIXED_DELAY:2s}
+      processing-timeout: ${CHECKOUT_WORKER_PROCESSING_TIMEOUT:1m}
   kafka:
     topics:
       order-events: ${KAFKA_TOPIC_ORDER_EVENTS:dev.orders.events}
