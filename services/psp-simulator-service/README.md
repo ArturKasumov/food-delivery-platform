@@ -27,7 +27,7 @@ Content-Type: application/json
   "orderId": "22222222-2222-2222-2222-222222222222",
   "amount": 250.00,
   "currency": "UAH",
-  "callbackUrl": "http://localhost:8083/api/v1/payment/callback/psp-simulator"
+  "callbackUrl": "http://localhost:8083/api/v1/payments/callback/psp-simulator"
 }
 ```
 

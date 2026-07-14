@@ -4,6 +4,7 @@ import com.arturk.fooddelivery.psp.enums.CheckoutSessionStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 public record CheckoutSession(
@@ -14,6 +15,7 @@ public record CheckoutSession(
         String currency,
         String checkoutUrl,
         String callbackUrl,
+        Map<String, String> metadata,
         CheckoutSessionStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -48,6 +50,7 @@ public record CheckoutSession(
                 currency,
                 checkoutUrl,
                 callbackUrl,
+                metadata,
                 status,
                 createdAt,
                 LocalDateTime.now()

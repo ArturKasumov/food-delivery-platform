@@ -79,6 +79,7 @@ public class CheckoutSessionService {
                         .build(sessionId)
                         .toString(),
                 request.callbackUrl(),
+                request.metadata(),
                 CheckoutSessionStatus.CREATED,
                 now,
                 now

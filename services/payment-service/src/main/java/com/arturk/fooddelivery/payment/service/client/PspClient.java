@@ -1,6 +1,7 @@
 package com.arturk.fooddelivery.payment.service.client;
 
 import com.arturk.fooddelivery.payment.config.properties.PspProperties;
+import com.arturk.fooddelivery.payment.constants.CorrelationIdConstants;
 import com.arturk.fooddelivery.payment.domain.CheckoutJobEntity;
 import com.arturk.fooddelivery.payment.dto.psp.CreateCheckoutSessionRequest;
 import com.arturk.fooddelivery.payment.dto.psp.CreateCheckoutSessionResponse;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -22,7 +25,8 @@ public class PspClient {
                 checkoutJob.getOrderId(),
                 checkoutJob.getAmount(),
                 "UAH",
-                pspProperties.callbackUrl()
+                pspProperties.callbackUrl(),
+                Map.of(CorrelationIdConstants.MDC_KEY, checkoutJob.getCorrelationId())
         );
 
         CreateCheckoutSessionResponse response = pspRestClient.post()

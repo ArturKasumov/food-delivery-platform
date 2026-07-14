@@ -28,12 +28,12 @@ public class PspCallbackClient {
 
     public void send(CheckoutSession session, CheckoutDecision decision) {
         PspPaymentCallbackRequest callback = new PspPaymentCallbackRequest(
-                UUID.randomUUID(),
                 session.id(),
                 session.paymentId(),
                 session.orderId(),
                 decision,
-                Instant.now()
+                Instant.now(),
+                session.metadata()
         );
 
         try {
@@ -48,7 +48,7 @@ public class PspCallbackClient {
                     .header(SIGNATURE_HEADER, signature);
 
             request.body(rawBody).retrieve().toBodilessEntity();
-            log.info("Delivered PSP callback: {} for payment: {}", callback.eventId(), session.paymentId());
+            log.info("Delivered PSP callback for session: {} for payment: {}", callback.sessionId(), session.paymentId());
         } catch (Exception exception) {
             log.warn("Failed to deliver PSP callback for payment: {}", session.paymentId(), exception);
         }

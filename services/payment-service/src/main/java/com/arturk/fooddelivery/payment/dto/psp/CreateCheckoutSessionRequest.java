@@ -1,6 +1,7 @@
 package com.arturk.fooddelivery.payment.dto.psp;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.UUID;
 
 public record CreateCheckoutSessionRequest(
@@ -8,6 +9,7 @@ public record CreateCheckoutSessionRequest(
         UUID orderId,
         BigDecimal amount,
         String currency,
-        String callbackUrl
+        String callbackUrl,
+        Map<String, String> metadata
 ) {
 }

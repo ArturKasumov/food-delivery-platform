@@ -3,6 +3,7 @@ package com.arturk.fooddelivery.psp.dto.request;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.UUID;
 
 public record CreateCheckoutSessionRequest(
@@ -22,6 +23,8 @@ public record CreateCheckoutSessionRequest(
         String currency,
 
         @NotBlank
-        String callbackUrl
+        String callbackUrl,
+
+        Map<String, String> metadata
 ) {
 }
