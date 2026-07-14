@@ -27,20 +27,26 @@ public class PaymentCallbackHandler {
 
         if (payment.isFinalStatus()) {
             log.warn(
-                    "Ignoring PSP callback {} because payment {} is already {}",
-                    callback.eventId(),
+                    "Ignoring PSP callback for session: {} because payment {} is already {}",
+                    callback.sessionId(),
                     payment.getId(),
                     payment.getStatus()
             );
             return;
         }
 
-        if (callback.status() == PspCallbackStatus.PAID) {
-            payment.applyPaymentCompleted();
-        } else {
-            payment.applyPaymentFailed("CUSTOMER_CANCELLED");
+        switch (callback.status()) {
+            case PspCallbackStatus.PAID:
+                payment.applyPaymentCompleted();
+                break;
+            case PspCallbackStatus.CANCELLED:
+                payment.applyPaymentFailed("CUSTOMER_CANCELLED");
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported callback status: " + callback.status());
         }
 
         outboxService.savePaymentResultEvent(payment);
+        log.info("Callback applied to payment: {} updated to: {}", payment.getId(), payment.getStatus());
     }
 }
