@@ -5,6 +5,8 @@ import com.arturk.fooddelivery.payment.domain.CheckoutJobEntity;
 import com.arturk.fooddelivery.payment.domain.PaymentEntity;
 import com.arturk.fooddelivery.payment.dto.psp.CreateCheckoutSessionResponse;
 import com.arturk.fooddelivery.payment.enums.CheckoutJobStatus;
+import com.arturk.fooddelivery.payment.exception.business.CheckoutJobNotFoundException;
+import com.arturk.fooddelivery.payment.exception.business.PaymentNotFoundException;
 import com.arturk.fooddelivery.payment.repository.CheckoutJobRepository;
 import com.arturk.fooddelivery.payment.repository.PaymentRepository;
 import com.arturk.fooddelivery.payment.service.outbox.OutboxService;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +37,7 @@ public class CheckoutService {
         List<CheckoutJobEntity> jobs =
                 checkoutJobRepository.findPendingJobsForUpdate(
                         checkoutWorkerProperties.batchSize(),
+                        checkoutWorkerProperties.maxRetryAttempts(),
                         processingBefore
                 );
 
@@ -60,7 +64,7 @@ public class CheckoutService {
 
         PaymentEntity payment = getPaymentForUpdate(checkoutJob.getPaymentId());
         if (payment.isFinalStatus()) {
-            checkoutJob.markFailed();
+            checkoutJob.markFailed("Payment is already: " + payment.getStatus());
             log.warn("Ignoring checkout success because payment: {} is already: {}",
                     payment.getId(), payment.getStatus());
             return;
@@ -68,10 +72,15 @@ public class CheckoutService {
 
         payment.applyCheckoutCreated(response.sessionId(), response.checkoutUrl());
         checkoutJob.markCompleted();
+
+        log.info("Created PSP checkout session: {} for payment: {}",
+                response.sessionId(), checkoutJob.getPaymentId());
     }
 
     @Transactional
-    public void failCheckoutSessionCreation(UUID jobId, String failureReason) {
+    public void handleCheckoutSessionCreationFailure(UUID jobId,
+                                                     String failureReason,
+                                                     boolean retryable) {
         CheckoutJobEntity job = getJobForUpdate(jobId);
         if (job.getStatus() != CheckoutJobStatus.PROCESSING) {
             log.warn("Ignoring late checkout failure for job: {} with status: {}", jobId, job.getStatus());
@@ -79,25 +88,43 @@ public class CheckoutService {
         }
 
         PaymentEntity payment = getPaymentForUpdate(job.getPaymentId());
-        job.markFailed();
 
         if (payment.isFinalStatus()) {
+            job.markFailed("Payment is already: " + payment.getStatus());
             log.warn("Ignoring checkout failure because payment: {} is already: {}",
                     payment.getId(), payment.getStatus());
             return;
         }
 
+        int failedAttempt = job.getRetryAttempt() + 1;
+        if (retryable && failedAttempt < checkoutWorkerProperties.maxRetryAttempts()) {
+            LocalDateTime nextAttemptAt = LocalDateTime.now().plus(calculateRetryDelay(failedAttempt));
+            job.applyRetryableFailure(failureReason, nextAttemptAt);
+            log.warn("Scheduled PSP checkout retry for job: {}, payment: {}, attempt: {}, nextAttemptAt: {}",
+                    job.getId(), job.getPaymentId(), failedAttempt, nextAttemptAt);
+            return;
+        }
+
+        job.markFailed(failureReason);
         payment.applyPaymentFailed("CHECKOUT_CREATION_FAILED: " + failureReason);
         outboxService.savePaymentResultEvent(payment);
     }
 
     private CheckoutJobEntity getJobForUpdate(UUID jobId) {
         return checkoutJobRepository.findByIdForUpdate(jobId)
-                .orElseThrow(() -> new IllegalStateException("Checkout job not found: " + jobId));
+                .orElseThrow(CheckoutJobNotFoundException::new);
     }
 
     private PaymentEntity getPaymentForUpdate(UUID paymentId) {
         return paymentRepository.findByIdForUpdate(paymentId)
-                .orElseThrow(() -> new IllegalStateException("Payment not found: " + paymentId));
+                .orElseThrow(PaymentNotFoundException::new);
+    }
+
+    private Duration calculateRetryDelay(int failedAttempt) {
+        Duration delay = checkoutWorkerProperties.retryInitialDelay();
+        for (int attempt = 1; attempt < failedAttempt; attempt++) {
+            delay = delay.multipliedBy(2);
+        }
+        return delay;
     }
 }

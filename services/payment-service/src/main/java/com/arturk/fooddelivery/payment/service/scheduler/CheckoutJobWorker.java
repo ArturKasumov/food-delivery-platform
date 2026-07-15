@@ -3,6 +3,7 @@ package com.arturk.fooddelivery.payment.service.scheduler;
 import com.arturk.fooddelivery.payment.constants.CorrelationIdConstants;
 import com.arturk.fooddelivery.payment.domain.CheckoutJobEntity;
 import com.arturk.fooddelivery.payment.dto.psp.CreateCheckoutSessionResponse;
+import com.arturk.fooddelivery.payment.exception.technical.PspClientException;
 import com.arturk.fooddelivery.payment.service.checkout.CheckoutService;
 import com.arturk.fooddelivery.payment.service.client.PspClient;
 import lombok.RequiredArgsConstructor;
@@ -42,13 +43,25 @@ public class CheckoutJobWorker {
             try {
                 CreateCheckoutSessionResponse response = pspClient.createCheckoutSession(checkoutJob);
                 checkoutJobService.completeCheckoutSessionCreation(checkoutJob.getId(), response);
-                log.info("Created PSP checkout session: {} for payment: {}",
-                        response.sessionId(), checkoutJob.getPaymentId());
             } catch (Exception exception) {
-                checkoutJobService.failCheckoutSessionCreation(checkoutJob.getId(), exception.getMessage());
-                log.warn("Failed to create PSP checkout for payment: {}",
-                        checkoutJob.getPaymentId(), exception);
+                String failureReason = normalizeMessage(exception);
+                boolean retryable = exception instanceof PspClientException pspException
+                        && pspException.isRetryable();
+
+                checkoutJobService.handleCheckoutSessionCreationFailure(
+                        checkoutJob.getId(),
+                        failureReason,
+                        retryable
+                );
+                log.warn("Failed to create PSP checkout for payment: {}, retryable: {}",
+                        checkoutJob.getPaymentId(), retryable, exception);
             }
         }
+    }
+
+    private String normalizeMessage(Exception exception) {
+        return exception.getMessage() == null || exception.getMessage().isBlank()
+                ? exception.getClass().getSimpleName()
+                : exception.getMessage();
     }
 }

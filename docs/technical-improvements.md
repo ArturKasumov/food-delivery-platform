@@ -16,12 +16,9 @@ Error details and failure reason.
 Retry attempt information.
 Monitoring and alerting for messages sent to dead letter topics.
 
-### REL-004: Add Retry Handling for PSP Checkout Session Creation
+### REL-005: Improve Persistence and Callback Reliability in the PSP Simulator Service
 
-Add a retry mechanism for PSP calls performed by the Payment Service when creating a checkout session in CheckoutJobWorker.
-
-### REL-005: Add Retry Handling for PSP Callback Delivery
-
+Replace the in-memory checkout session storage based on ConcurrentHashMap with persistent database storage.
 Add a retry mechanism for callback requests sent by the PSP simulator.
 
 ### OBS-001: Preserve Trace Context Across the Transactional Outbox Boundary

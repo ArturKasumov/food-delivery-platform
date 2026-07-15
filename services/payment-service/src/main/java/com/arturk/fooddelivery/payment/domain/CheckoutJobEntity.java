@@ -44,6 +44,15 @@ public class CheckoutJobEntity {
     @Column(name = "correlation_id", nullable = false, length = 64)
     private String correlationId;
 
+    @Column(name = "retry_attempt", nullable = false)
+    private int retryAttempt;
+
+    @Column(name = "next_attempt_at")
+    private LocalDateTime nextAttemptAt;
+
+    @Column(name = "last_error", columnDefinition = "text")
+    private String lastError;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -62,6 +71,8 @@ public class CheckoutJobEntity {
         this.amount = amount;
         this.correlationId = correlationId;
         this.status = CheckoutJobStatus.PENDING;
+        this.retryAttempt = 0;
+        this.nextAttemptAt = LocalDateTime.now();
     }
 
     public void markProcessing() {
@@ -70,9 +81,21 @@ public class CheckoutJobEntity {
 
     public void markCompleted() {
         this.status = CheckoutJobStatus.COMPLETED;
+        this.nextAttemptAt = null;
+        this.lastError = null;
     }
 
-    public void markFailed() {
+    public void applyRetryableFailure(String lastError, LocalDateTime nextAttemptAt) {
+        this.status = CheckoutJobStatus.PENDING;
+        this.retryAttempt++;
+        this.lastError = lastError;
+        this.nextAttemptAt = nextAttemptAt;
+    }
+
+    public void markFailed(String lastError) {
         this.status = CheckoutJobStatus.FAILED;
+        this.retryAttempt++;
+        this.lastError = lastError;
+        this.nextAttemptAt = null;
     }
 }

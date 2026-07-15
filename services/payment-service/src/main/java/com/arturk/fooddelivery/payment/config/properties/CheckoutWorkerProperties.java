@@ -13,6 +13,13 @@ public record CheckoutWorkerProperties(
         boolean enabled,
         @Min(1) int batchSize,
         @NotNull Duration fixedDelay,
+        @Min(1) int maxRetryAttempts,
+        @NotNull Duration retryInitialDelay,
         @NotNull Duration processingTimeout
 ) {
+    public CheckoutWorkerProperties {
+        if (retryInitialDelay != null && (retryInitialDelay.isZero() || retryInitialDelay.isNegative())) {
+            throw new IllegalArgumentException("Checkout retry initial delay must be positive");
+        }
+    }
 }

@@ -23,12 +23,15 @@ public interface CheckoutJobRepository extends JpaRepository<CheckoutJobEntity, 
                 status = 'PENDING'
                 OR (status = 'PROCESSING' AND updated_at < :processingBefore)
             )
+            AND next_attempt_at <= CURRENT_TIMESTAMP
+            AND retry_attempt < :maxRetryAttempts
             ORDER BY created_at
             LIMIT :batchSize
             FOR UPDATE SKIP LOCKED
             """, nativeQuery = true)
     List<CheckoutJobEntity> findPendingJobsForUpdate(
             @Param("batchSize") int batchSize,
+            @Param("maxRetryAttempts") int maxRetryAttempts,
             @Param("processingBefore") LocalDateTime processingBefore
     );
 
