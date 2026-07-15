@@ -20,6 +20,7 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEventEntity, 
                 status IN ('PENDING', 'FAILED')
                 OR (status = 'PROCESSING' AND updated_at < :processingBefore)
             )
+            AND next_attempt_at <= CURRENT_TIMESTAMP
             AND retry_attempt < :maxRetryAttempts
             ORDER BY created_at
             LIMIT :batchSize

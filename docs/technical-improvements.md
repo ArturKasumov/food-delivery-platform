@@ -3,31 +3,6 @@
 This document describes planned technical improvements, architectural enhancements,
 known limitations, and technical debt of the system.
 
-
-### REL-001: Improve the Outbox Publishing Retry Mechanism
-
-Improve the retry mechanism used for publishing outbox events.
-
-The improvement should include:
-
-Adding a nextAttemptAt field to the outbox event.
-Selecting events only when nextAttemptAt is less than or equal to the current time.
-Supporting configurable retry delays.
-Applying an exponential backoff strategy.
-Preventing continuous retries without a delay.
-
-### REL-002: Introduce a Terminal Status for Failed Outbox Events
-
-Introduce a terminal DEAD status for outbox events that have reached the maximum number of publishing attempts.
-
-The implementation should include:
-
-Transitioning an event to DEAD after the retry limit is reached.
-Events with the DEAD status must not be selected for further automatic retries.
-Saving the latest publishing error.
-Recording the time of the final failed attempt.
-Providing a mechanism for manually reprocessing dead events.
-
 ### REL-003: Add Dead Letter Topics for Kafka Consumers
 
 Introduce Dead Letter Topics (DLT) for Kafka consumers to handle messages 

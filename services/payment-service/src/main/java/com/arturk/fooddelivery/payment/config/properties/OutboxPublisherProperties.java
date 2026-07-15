@@ -1,6 +1,7 @@
 package com.arturk.fooddelivery.payment.config.properties;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -11,8 +12,14 @@ import java.time.Duration;
 public record OutboxPublisherProperties(
         boolean enabled,
         @Min(1) int batchSize,
-        Duration fixedDelay,
+        @NotNull Duration fixedDelay,
         @Min(1) int maxRetryAttempts,
-        Duration processingTimeout
+        @NotNull Duration retryInitialDelay,
+        @NotNull Duration processingTimeout
 ) {
+    public OutboxPublisherProperties {
+        if (retryInitialDelay != null && (retryInitialDelay.isZero() || retryInitialDelay.isNegative())) {
+            throw new IllegalArgumentException("Retry initial delay must be positive");
+        }
+    }
 }

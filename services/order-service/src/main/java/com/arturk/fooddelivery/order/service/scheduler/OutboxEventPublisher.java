@@ -62,11 +62,11 @@ public class OutboxEventPublisher {
             } catch (InterruptedException exception) {
                 Thread.currentThread().interrupt();
 
-                outboxService.markFailed(event, exception.getMessage());
+                outboxService.markFailed(event, getErrorMessage(exception));
                 log.warn("Publishing outbox event: {}, {} was interrupted, mark as failed", event.getEventType(), event.getId(), exception);
 
             } catch (Exception exception) {
-                outboxService.markFailed(event, exception.getMessage());
+                outboxService.markFailed(event, getErrorMessage(exception));
                 log.warn("Failed to publish outbox event: {}, {}", event.getEventType(), event.getId(), exception);
             }
         }
@@ -74,5 +74,11 @@ public class OutboxEventPublisher {
 
     private Object getKafkaEvent(OutboxEventEntity event) {
         return kafkaEventMapperFactory.getKafkaEventMapper(event.getEventType()).mapToKafkaEvent(event);
+    }
+
+    private String getErrorMessage(Exception exception) {
+        return exception.getMessage() == null || exception.getMessage().isBlank()
+                ? exception.getClass().getSimpleName()
+                : exception.getMessage();
     }
 }

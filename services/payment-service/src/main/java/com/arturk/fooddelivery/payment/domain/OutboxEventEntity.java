@@ -63,6 +63,9 @@ public class OutboxEventEntity {
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 
+    @Column(name = "next_attempt_at")
+    private LocalDateTime nextAttemptAt;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -87,22 +90,41 @@ public class OutboxEventEntity {
         this.payload = payload;
         this.status = OutboxEventStatus.PENDING;
         this.retryAttempt = 0;
+        this.nextAttemptAt = LocalDateTime.now();
     }
 
     public void markProcessing() {
         this.status = OutboxEventStatus.PROCESSING;
-        this.error = null;
     }
 
     public void markPublished() {
         this.status = OutboxEventStatus.PUBLISHED;
         this.publishedAt = LocalDateTime.now();
+        this.nextAttemptAt = null;
         this.error = null;
     }
 
-    public void markFailed(String error) {
+    public void markFailed(String error, LocalDateTime nextAttemptAt) {
         this.status = OutboxEventStatus.FAILED;
         this.retryAttempt++;
         this.error = error;
+        this.nextAttemptAt = nextAttemptAt;
+    }
+
+    public void markDead(String error) {
+        this.status = OutboxEventStatus.DEAD;
+        this.retryAttempt++;
+        this.error = error;
+        this.nextAttemptAt = null;
+    }
+
+    public void reprocess() {
+        if (status != OutboxEventStatus.DEAD) {
+            throw new IllegalStateException("Only DEAD outbox events can be reprocessed");
+        }
+
+        this.status = OutboxEventStatus.PENDING;
+        this.retryAttempt = 0;
+        this.nextAttemptAt = LocalDateTime.now();
     }
 }

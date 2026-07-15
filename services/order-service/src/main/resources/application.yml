@@ -58,6 +58,7 @@ app:
       batch-size: ${OUTBOX_PUBLISHER_BATCH_SIZE:50}
       fixed-delay: ${OUTBOX_PUBLISHER_FIXED_DELAY:5s}
       max-retry-attempts: ${OUTBOX_PUBLISHER_MAX_RETRY_ATTEMPTS:3}
+      retry-initial-delay: ${OUTBOX_PUBLISHER_RETRY_INITIAL_DELAY:10s}
       processing-timeout: ${OUTBOX_PUBLISHER_PROCESSING_TIMEOUT:3m}
 
   environment: ${APP_ENV:local}
@@ -70,7 +71,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus
+        include: health,info,metrics,prometheus,outbox
   endpoint:
     health:
       probes:

@@ -1,3 +1,5 @@
+
+
 package com.arturk.fooddelivery.order.service.outbox;
 
 import com.arturk.fooddelivery.order.AbstractIntegrationTest;
@@ -15,6 +17,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -25,6 +28,7 @@ import java.util.concurrent.Future;
 import static com.arturk.fooddelivery.order.constants.OrderEventTypes.ORDER_AGGREGATE_TYPE;
 import static com.arturk.fooddelivery.order.constants.OrderEventTypes.ORDER_CREATED_EVENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
 
@@ -59,7 +63,10 @@ class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
                 .filteredOn(event -> event.getAggregateId().equals(order.getId()))
                 .filteredOn(event -> event.getEventType().equals(ORDER_CREATED_EVENT_TYPE))
                 .singleElement()
-                .satisfies(event -> assertThat(event.getStatus()).isEqualTo(OutboxEventStatus.PENDING));
+                .satisfies(event -> {
+                    assertThat(event.getStatus()).isEqualTo(OutboxEventStatus.PENDING);
+                    assertThat(event.getNextAttemptAt()).isNotNull();
+                });
     }
 
     @Test
@@ -102,6 +109,34 @@ class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
     void claimPublishableEventIds_shouldNotClaimEventWhenRetryAttemptsExceeded() {
         // given
         saveOutboxEvent(createFailedOutboxEvent(outboxPublisherProperties.maxRetryAttempts()));
+
+        // when
+        List<UUID> ids = outboxService.claimPublishableEventIds();
+
+        // then
+        assertThat(ids).isEmpty();
+    }
+
+    @Test
+    void claimPublishableEventIds_shouldNotClaimEventBeforeNextAttemptAt() {
+        // given
+        OutboxEventEntity failedEvent = createFailedOutboxEvent(1);
+        failedEvent.setNextAttemptAt(LocalDateTime.now().plusMinutes(1));
+        saveOutboxEvent(failedEvent);
+
+        // when
+        List<UUID> ids = outboxService.claimPublishableEventIds();
+
+        // then
+        assertThat(ids).isEmpty();
+    }
+
+    @Test
+    void claimPublishableEventIds_shouldNeverClaimDeadEvents() {
+        // given
+        OutboxEventEntity deadEvent = createOutboxEvent(OutboxEventStatus.DEAD);
+        deadEvent.setNextAttemptAt(LocalDateTime.now().minusMinutes(1));
+        saveOutboxEvent(deadEvent);
 
         // when
         List<UUID> ids = outboxService.claimPublishableEventIds();
@@ -181,6 +216,7 @@ class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
 
         assertThat(updated.getStatus()).isEqualTo(OutboxEventStatus.PUBLISHED);
         assertThat(updated.getPublishedAt()).isNotNull();
+        assertThat(updated.getNextAttemptAt()).isNull();
         assertThat(updated.getError()).isNull();
     }
 
@@ -199,6 +235,44 @@ class OutboxServiceIntegrationTest extends AbstractIntegrationTest {
         assertThat(updated.getStatus()).isEqualTo(OutboxEventStatus.FAILED);
         assertThat(updated.getError()).isEqualTo("Error message");
         assertThat(updated.getRetryAttempt()).isEqualTo(1);
+    }
+
+    @Test
+    void markFailed_shouldMarkEventDeadWhenRetryLimitIsReached() {
+        // given
+        OutboxEventEntity event = createOutboxEvent(OutboxEventStatus.PROCESSING);
+        event.setRetryAttempt(outboxPublisherProperties.maxRetryAttempts() - 1);
+        saveOutboxEvent(event);
+
+        // when
+        outboxService.markFailed(event, "Terminal failure");
+
+        // then
+        OutboxEventEntity updated = outboxEventRepository.findById(event.getId()).orElseThrow();
+        assertThat(updated.getStatus()).isEqualTo(OutboxEventStatus.DEAD);
+        assertThat(updated.getRetryAttempt()).isEqualTo(outboxPublisherProperties.maxRetryAttempts());
+        assertThat(updated.getError()).isEqualTo("Terminal failure");
+        assertThat(updated.getNextAttemptAt()).isNull();
+    }
+
+    @Test
+    void reprocessDeadEvent_shouldReturnEventToPendingState() {
+        // given
+        OutboxEventEntity event = createOutboxEvent(OutboxEventStatus.DEAD);
+        event.setRetryAttempt(outboxPublisherProperties.maxRetryAttempts());
+        event.setError("Terminal failure");
+        event.setNextAttemptAt(null);
+        saveOutboxEvent(event);
+
+        // when
+        outboxService.reprocessDeadEvent(event.getId());
+
+        // then
+        OutboxEventEntity updated = outboxEventRepository.findById(event.getId()).orElseThrow();
+        assertThat(updated.getStatus()).isEqualTo(OutboxEventStatus.PENDING);
+        assertThat(updated.getRetryAttempt()).isZero();
+        assertThat(updated.getError()).isEqualTo("Terminal failure");
+        assertThat(updated.getNextAttemptAt()).isNotNull();
     }
 
     @Test

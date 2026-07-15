@@ -10,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -57,7 +59,31 @@ public class OutboxService {
     }
 
     public void markFailed(OutboxEventEntity event, String message) {
-        event.markFailed(message);
+        int failedAttempt = event.getRetryAttempt() + 1;
+
+        if (failedAttempt >= outboxPublisherProperties.maxRetryAttempts()) {
+            event.markDead(message);
+        } else {
+            event.markFailed(message, LocalDateTime.now().plus(calculateRetryDelay(failedAttempt)));
+        }
+
         outboxEventRepository.save(event);
+    }
+
+    @Transactional
+    public OutboxEventEntity reprocessDeadEvent(UUID eventId) {
+        OutboxEventEntity event = outboxEventRepository.findById(eventId)
+                .orElseThrow(() -> new NoSuchElementException("Outbox event not found: " + eventId));
+
+        event.reprocess();
+        return event;
+    }
+
+    private Duration calculateRetryDelay(int failedAttempt) {
+        Duration delay = outboxPublisherProperties.retryInitialDelay();
+        for (int attempt = 1; attempt < failedAttempt; attempt++) {
+            delay = delay.multipliedBy(2);
+        }
+        return delay;
     }
 }
